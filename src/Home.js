@@ -3,13 +3,6 @@ import useFetch from "./fetch/useFetch";
 import { useState } from "react";
 
 
-
-
-
-
-
-
-
 const Home = () => {
   const {
     data: blogs,

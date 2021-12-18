@@ -54,6 +54,7 @@
 }
 
 .Create{
+  max-width: 100%;
   margin: 0px auto;
   text-align: center;
 }

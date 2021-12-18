@@ -1,7 +1,7 @@
-import { AppBar,  Toolbar, Typography } from "@mui/material";
+import { AppBar,  Toolbar, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(()=>{
 

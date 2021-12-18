@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import {BrowserRouter} from 'react-router-dom'
-
+import {theme} from './theme/theme'
+import { ThemeProvider } from '@material-ui/core';
 
 ReactDOM.render(
   <React.StrictMode>
   <BrowserRouter>
+
     <App />
+   
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
