@@ -4,13 +4,14 @@ import { Route, Routes,Router } from "react-router-dom";
 import Create from "./Create";
 import BlogDetails from "./ComponentTemplate/BlogDetails";
 import NotFound from "./Notfound";
-import Layout from "./ComponentTemplate/Layout";
+import Layout from "./Layout/Layout";
+import Test from "./ComponentTemplate/Testlayout"
 function App() {
   return (
     <div className="App">
-      <Navbar />
+     
 
-      <div className="content">
+     
      
       
    
@@ -23,8 +24,7 @@ function App() {
             </Route>
           </Routes>
 
-      
-      </div>
+    
     </div>
   );
 }

@@ -8,6 +8,8 @@ import { useState } from "react";
 
 
 
+
+
 const Home = () => {
   const {
     data: blogs,
@@ -19,7 +21,9 @@ const Home = () => {
 
 
   return (
+   
     <div className="home">
+   
       {error && <div>{error}</div>}
       {isPending && (
         <div>
@@ -37,6 +41,7 @@ const Home = () => {
      
       </div>
     </div>
+
   );
 };
 //using props

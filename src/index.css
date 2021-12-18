@@ -10,7 +10,7 @@
   padding: 20px;
   display: flex;
   align-items: center;
-  max-width: 600px;
+  width: 100%;
   margin: 0 auto;
   border-bottom: 1px solid #f2f2f2;
 }
@@ -29,8 +29,8 @@
   color: #f1356d;
 }
 .content {
-  max-width: 600px;
-  margin: 40px auto;
+ 
+  margin: 0px auto;
   padding: 20px;
 }
 
@@ -54,7 +54,6 @@
 }
 
 .Create{
-  max-width: 600px;
   margin: 0px auto;
   text-align: center;
 }
