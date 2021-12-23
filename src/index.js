@@ -3,16 +3,18 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import {BrowserRouter} from 'react-router-dom'
-import {theme} from './theme/theme'
-import { ThemeProvider } from '@material-ui/core';
+// Import css files
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import AuthContextProvider from './Context/AuthContext';
 
 ReactDOM.render(
   <React.StrictMode>
+     <AuthContextProvider>
   <BrowserRouter>
-
     <App />
-   
     </BrowserRouter>
+    </AuthContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
