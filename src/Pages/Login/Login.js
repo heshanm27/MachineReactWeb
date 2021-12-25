@@ -82,7 +82,7 @@ export default function Login() {
         }
 
         login(email,password)
-            .then(res=>navigate('/warrenty'))
+            .then(res=>navigate('/dashbord'))
             .catch((e)=>{
                 toast({
                     description: e.message,

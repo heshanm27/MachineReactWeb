@@ -29,7 +29,7 @@ const Header = () => {
   const [checked, setChecked] = useState(false);
   return (
     <div className={classes.root}>
-   {currentUser && <AppBar position="static">
+   <AppBar position="static">
   <Toolbar className={classes.toolbar}>
     <Typography variant="h6" className={classes.title}>
     Rosacrd.com
@@ -50,7 +50,7 @@ const Header = () => {
           }}
         />}
   </Toolbar>
-</AppBar>}
+</AppBar>
 
 </div>
   );

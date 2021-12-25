@@ -17,6 +17,7 @@ import Landing from "./Landing";
 import FooterPage from "./Footer";
 import Brand from "./Brand";
 import ContactUs from "./Contactus";
+import Header from "../../component/Header";
 const userStyle = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
@@ -32,7 +33,7 @@ const Home = () => {
   
     <>
     
-  
+     <Header/>
       <Landing/>
       <Divider variant="middle"/>
       <LearMore/>
