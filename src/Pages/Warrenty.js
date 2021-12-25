@@ -1,5 +1,5 @@
 import {
-  Button,
+ Button as btn,
   Container,
   Grid,
   makeStyles,
@@ -11,8 +11,10 @@ import {
   Avatar,
   TextareaAutosize,
   Divider,
+  CircularProgress,
 } from "@material-ui/core";
 import {
+  Button,
   Input,
   Stack,
   useToast,
@@ -32,8 +34,8 @@ import React, { useRef } from "react";
 import emailjs from "emailjs-com";
 import LoopIcon from "@material-ui/icons/Loop";
 import { Autocomplete } from "@material-ui/lab";
-import { db } from "../init/firebaseinit";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db, storage } from "../init/firebaseinit";
+import { addDoc, collection, onSnapshot, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -41,6 +43,7 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import placeholderImage from '../img/placeholder.jpg'
+import { ref,getDownloadURL,uploadBytesResumable } from "firebase/storage";
 
 const userStyle = makeStyles((theme) => ({
   roots: {
@@ -75,6 +78,8 @@ const userStyle = makeStyles((theme) => ({
       display:'flex',
      alignContent:'center',
       textAlign:'center'
+  },buttons:{
+      marginRight:'10px'
   }
 }));
 
@@ -85,9 +90,9 @@ const Warrenty = () => {
   const classes = userStyle();
   const [options, setoptions] = useState([]);
   const [customer, setCustomer] = useState([]);
-
-  const [lists, setLists] = useState([{}]);
-  const [value, setValue] = useState("");
+  const toast=useToast()
+  const [pdfloading, setpdfloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const hello = "hello";
   const [CodeGroup, setCodeGroup] = useState([]);
   const [BrandGroup, setBrandGroup] = useState([]);
@@ -95,7 +100,7 @@ const Warrenty = () => {
   //input values
   const [adddress, setAddress] = useState("");
   const [contactNo, setContactNo] = useState("");
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState("Heshan Madhuranga");
   const [Brand, setBrand] = useState("");
   const [Code, setCode] = useState("");
   const [curruntdates, setCurruntDate] = useState(new Date());
@@ -108,6 +113,10 @@ const Warrenty = () => {
   const [InjectorNo, setInjectorNo] = useState("");
   const [InjectorCode, setInjectorCode] = useState("");
   const [profileImg,setprofileImg]=useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
+  const [images, setImages] = useState([]);
+  const [newParts,setNewParts]=useState("")
+  const [progress,setProgress]= useState(0)
+  const [Url,setUrls] =useState("")
   //sendparamters
   const [params, setParams] = useState({});
   //getCustomer data from firebase
@@ -122,6 +131,8 @@ const Warrenty = () => {
           ...doc.data(),
         });
       });
+    
+
       setCustomer(post);
     });
   }
@@ -138,6 +149,7 @@ const Warrenty = () => {
           ...doc.data(),
         });
       });
+      console.log(post)
       setBrandGroup(post);
       setCodeGroup(post);
     });
@@ -146,9 +158,18 @@ const Warrenty = () => {
   //check user is exits or not
   function checkCustomer(name) {
     //firestore query
+    console.log(name)
+    setUser(name);
+    const result = customer.filter(customer => customer.CustomerName === name);
+   
+    if(result.length === 0){
+      setUser(name);
+      console.log('filter')
+      return
+    }else{
+      console.log('firebase')
     const collectionRef = collection(db, "Warrenty");
-    const q = query(collectionRef, where("CustomerName", "==", name));
-
+    const q = query(collectionRef, where("CustomerName", "==", result[0].CustomerName));
     //get data for that query
     onSnapshot(q, (snapshot) => {
       let post = [];
@@ -159,19 +180,14 @@ const Warrenty = () => {
         });
       });
       console.log(post);
-      if (post.length == 0) {
-        setUser(name);
-        setAddress("");
-        setContactNo("");
-        return;
-      } else {
         post.map((user) => {
           setUser(user.CustomerName);
           setAddress(user.Address);
           setContactNo(user.ContactNo);
         });
-      }
     });
+  }
+    
   }
   //check Brand is exits or not
   function checkEngine(name) {
@@ -247,7 +263,7 @@ const Warrenty = () => {
  
   //hadnle image
   const ImagePreview = (e)=>{
-      
+    setImages([]);
     const image = document.getElementById('handleImage')
       const reader = new FileReader();
       reader.onload = ()=>{
@@ -257,6 +273,11 @@ const Warrenty = () => {
       }
 
       reader.readAsDataURL(e.target.files[0])
+
+      
+    for (let i = 0; i < e.target.files.length; i++) {
+      setImages((prevState) => [...prevState, e.target.files[i]]);
+    }
         
   }
   useEffect(() => {
@@ -266,6 +287,81 @@ const Warrenty = () => {
     console.log(customer);
   }, []);
 
+  //hadnle submit
+
+  const handleSubmit = (e)=>{
+    e.preventDefault()
+    setLoading(true)
+    setUrls([])
+    const colRef = collection(db, "Warrenty");
+        const promises=[];
+        images.map((image) => {
+            const storageRef = ref(storage, `Productimages/${image.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, image);
+            promises.push(uploadTask);
+           
+            uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const prog = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setProgress(prog);
+            },
+            (e) =>  toast({
+                description: e.message,
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+              }),
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                console.log("File available at", downloadURL);
+                setUrls(downloadURL.toString())
+                console.log(Url)
+              });
+            });
+             
+        })
+
+          Promise.all(promises).then(()=>{
+
+            addDoc(colRef,{
+                CustomerName:user,
+                DateOfRepair:curruntdates,
+                WarrentyTill:expireDate,
+                Address:adddress,
+                ContactNo:contactNo,
+                Technician:technician,
+                VehicalBrand:Brand,
+                TechnicianContactNo:technicianContactNo,
+                RegistartionNo:RegistarationNo,
+                EngineCode:Code,
+                InjectorMake:InjectorMake,
+                InjectorNo:InjectorNo,
+                InjectorCode:InjectorCode,
+                newPartsDetails:newParts,
+                PartImage:Url
+            }).then(()=>{
+              setLoading(false)
+              setpdfloading(true)
+                toast({
+                    description: "Product Successfully Added",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                  });
+            }).catch((e)=>{
+                toast({
+                    description: e.message,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                  }); 
+            })
+          })
+
+  }
   return (
     <div className={classes.roots} id="review">
       <Container component="main" maxWidth="md">
@@ -278,8 +374,9 @@ const Warrenty = () => {
             <form
               ref={form}
               className={classes.form}
-              noValidate
+              onSubmit={e=>handleSubmit(e)}
               autoComplete="none"
+              
             >
               <Grid container spacing={4}>
                 <Grid
@@ -287,16 +384,19 @@ const Warrenty = () => {
                   xs={12}
                   sm={6}
                   className={classes.grid}
-                  direction="column"
+                 
                 >
-                  {" "}
+                
                   {/*Customer Name*/}
                   <Autocomplete
+                
                     inputValue={user}
-                    onInputChange={(event, newInputValue) => {
+                    onInputChange ={(event, newInputValue) => {
                       checkCustomer(newInputValue);
                     }}
                     id="controllable"
+                    freeSolo
+                    required
                     options={customer}
                     getOptionLabel={(option) => option.CustomerName}
                     renderInput={(params) => (
@@ -304,6 +404,7 @@ const Warrenty = () => {
                         {...params}
                         label="Customer Name"
                         variant="outlined"
+                       
                       />
                     )}
                   />
@@ -316,7 +417,7 @@ const Warrenty = () => {
                     id="address"
                     label="Address"
                     name="address"
-                    autoFocus
+                  
                     onChange={(e) => setAddress(e.target.value)}
                     value={adddress}
                   />
@@ -331,7 +432,7 @@ const Warrenty = () => {
                     name="ContactNo"
                     value={contactNo}
                     onChange={(e) => setContactNo(e.target.value)}
-                    autoFocus
+             
                   />
                   {/*Engine Brand*/}
                   <Autocomplete
@@ -361,11 +462,11 @@ const Warrenty = () => {
                     name="RegistrationNo"
                     value={RegistarationNo}
                     onChange={(e) => setRegistarationNo(e.target.value)}
-                    autoFocus
+                
                   />
                 </Grid>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Grid item xs={12} sm={6} direction="column">
+                  <Grid item xs={12} sm={6} >
                     {/*Date of Repair*/}
                     <KeyboardDatePicker
                       disableToolbar
@@ -409,7 +510,7 @@ const Warrenty = () => {
                       name="Technician"
                       value={technician}
                       onChange={(e) => setTecnician(e.target.value)}
-                      autoFocus
+                     
                     />
 
                     {/*Technician Contact No */}
@@ -424,7 +525,7 @@ const Warrenty = () => {
                       name="Technician Contact No"
                       value={technicianContactNo}
                       onChange={(e) => settechnicianContactNo(e.target.value)}
-                      autoFocus
+                    
                     />
                   </Grid>
                 </MuiPickersUtilsProvider>
@@ -465,7 +566,7 @@ const Warrenty = () => {
                     name="InjectorMake"
                     value={InjectorMake}
                     onChange={(e) => setInjectorMake(e.target.value)}
-                    autoFocus
+                    
                   />
 
                   {/*InjectorNo */}
@@ -480,7 +581,7 @@ const Warrenty = () => {
                     name="InjectorNo"
                     value={InjectorNo}
                     onChange={(e) => setInjectorNo(e.target.value)}
-                    autoFocus
+                 
                   />
                   {/*InjectorCode*/}
 
@@ -494,7 +595,7 @@ const Warrenty = () => {
                     name="InjectorCode"
                     value={InjectorCode}
                     onChange={(e) => setInjectorCode(e.target.value)}
-                    autoFocus
+                   
                   />
                 </Grid>
 
@@ -504,14 +605,14 @@ const Warrenty = () => {
                     margin="normal"
                     required
                     fullWidth
-                    id="InjectorCode"
-                    label="Injector Code"
-                    name="InjectorCode"
-                    value={InjectorCode}
-                    multiline="true"
+                    id="NewPartsDetails"
+                    label="New Parts Details"
+                    name="New Parts Details"
+                    value={newParts}
+                    multiline
                     minRows="10"
-                    onChange={(e) => setInjectorCode(e.target.value)}
-                    autoFocus
+                    onChange={(e) => setNewParts(e.target.value)}
+                
                   />
                 </Grid>
 
@@ -519,22 +620,22 @@ const Warrenty = () => {
                 <HStack>
 
                 <img src={profileImg} alt="placeholder image" width='200px' height='200px' id="placeholderImage" accept="image/*"/>
+                <CircularProgress variant="determinate" value={progress} />
                 <input
                     accept="image/*"
                     className={classes.inputs}
                     id="contained-button-file"
-                    multiple
                     type="file"
                     onChange={e=>ImagePreview(e)}
                   />
                   <label htmlFor="contained-button-file">
-                    <Button
+                   <btn
                       variant="contained"
-                      color="primary"
+                      color="#76ff03"
                       component="span"
                     >
                       Upload
-                    </Button>
+                    </btn>
                   </label>
                 </HStack>
 
@@ -542,17 +643,47 @@ const Warrenty = () => {
                 </Grid>
               
               </Grid>
-            </form>
 
+              <Grid item xs={12} sm={12} className={classes.grid}>
+                  
             <Button
               variant="contained"
-              color="primary"
+              color=" #76ff03"
+              className={classes.buttons}
+                      isLoading={loading}
+              type="submit"
+            >
+              Submit
+            </Button>
+
+            { pdfloading &&   <Button
+              variant="contained"
+              color="#76ff03"
               onClick={() => {
-                navigate("/pdf", { state: { Brand: Brand, code: Code } });
+                navigate("/pdf", { state: { Brand: Brand,
+                  EngineCode: Code,
+                 Address:adddress,
+                 CustomerName:user,
+                dateRepair:curruntdates,
+                WarrentyTill:expireDate,
+                Technician:technician,
+                TechnicianContactNo:technicianContactNo,
+                RegistarationNo:RegistarationNo,
+                InjectorMake:InjectorMake,
+                InjectorNo:InjectorNo,
+                InjectorCode:InjectorCode,
+                NewParts:newParts,
+               Image:Url,
+               contactNo:contactNo
+                 } });
               }}
             >
               Genrate Pdf
-            </Button>
+            </Button>}
+              </Grid>
+            </form>
+
+         
           </Paper>
         </div>
       </Container>

@@ -8,6 +8,11 @@ textarea {
 
 input {
   border: 0;
+ 
+}
+input[type="text"]
+{
+    font-size:16px;
 }
 
 .bold-text {
@@ -69,7 +74,9 @@ input {
   display: inline-block;
   float: left;    
   width: 500px;    
-  height: 100px;    
+  height: 100px;
+  text-align: justify;
+      
 }
 
 .textbox2{
@@ -77,4 +84,7 @@ input {
   float: left;    
   width: 200px;    
   height: 100px;    
+}
+.forms{
+  margin-bottom: 30px;
 }

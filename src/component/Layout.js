@@ -16,8 +16,8 @@ const drawerWidth = 240
 
 const useStyles = makeStyles((theme)=>({
   page: {
-    background: '#fghj',
     width: '100%',
+    background:'#76ff03'
   },
   root: {
     display: 'flex',
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme)=>({
     width: drawerWidth,
   },
   active: {
-    background: '#f4f4f4'
+    background:'#76ff03'
   },appBar: {
 
     width: `calc(100% - ${drawerWidth}px)`,
@@ -100,7 +100,7 @@ export default function Layout({ children }) {
         onClick={async e => {
             e.preventDefault()
             logout()
-            navigate('/login')
+            navigate('/')
           }}
       >
         Log Out

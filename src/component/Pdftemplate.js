@@ -20,47 +20,47 @@ export default function Pdftemplate({props}) {
           <table className="main-table">
             <tbody>
               <tr>
-                <td className="table-data">Name :<input type="text" value={props.Brand} /></td>
-                <td className="table-data left">Date of Repair :<input type="text"/><br/></td>
+                <td className="table-data">Name :<input type="text" value={props.CustomerName} /></td>
+                <td className="table-data left">Date of Repair :<input  value={props.dateRepair} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Contact No. : <input type="text" /></td>
-                <td className="table-data left">Warranty Till : <input type="text"/><br/></td>
+                <td className="table-data">Contact No. : <input value={props.contactNo}  type="text" /></td>
+                <td className="table-data left">Warranty Till : <input  value={props.WarrentyTill} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Address : <input type="text"/></td>
-                <td className="table-data left">Bill No : <input type="text"/><br/></td>
+                <td className="table-data">Address : <input value={props.Address} type="text"/></td>
+                <td className="table-data left">Bill No : <input value={props.dateRepair} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Vehicle : <input type="text"/></td>
-                <td className="table-data left">Technician : <input type="text"/><br/></td>
+                <td className="table-data">Vehicle : <input value={props.Brand} type="text"/></td>
+                <td className="table-data left">Technician : <input value={props.Technician} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Registration No. : <input type="text"/></td>
-                <td className="table-data left">Contact No. : <input type="text"/><br/></td>
+                <td className="table-data">Registration No. : <input value={props.RegistarationNo} type="text"/></td>
+                <td className="table-data left">Contact No. : <input  value={props.TechnicianContactNo} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data"> Address : <input type="text"/><br/></td>
+                <td className="table-data"> Address : <input value={props.Address} type="text" style={{width: '200px'}}/><br/></td>
               </tr>
             </tbody>
           </table>
         </form>
     
-        <br/>
+      
         <div className="midle-area">
           <form>
-            Engine Code : <input type="text"/><br/>
-            Injector Make : <input type="text"/><br/>
-            Injector No : <input type="text"/> <br/>
-            Injector Code : <input type="text"/><br/>
+            Engine Code : <input value={props.EngineCode} type="text"/><br/>
+            Injector Make : <input value={props.InjectorMake} type="text"/><br/>
+            Injector No : <input value={props.InjectorNo} type="text"/> <br/>
+            Injector Code : <input value={props.InjectorCode} type="text"/><br/>
           </form>
         </div>
     
         <p>New Parts Used:</p>
-        <form>
+        <form className='forms'>
         <div className="textbox1">
-          <div></div></div>
-          <div className="textbox2">  <img className='img' src="https://firebasestorage.googleapis.com/v0/b/socialtest-cef88.appspot.com/o/Productimages%2FScreenshot%20(1296).jpg?alt=media&token=baf0a27a-8887-4f4d-9dff-6dd81ea5bce3" width='200px' height='100px' alt=""/>
+          <div><p>{props.NewParts}</p></div></div>
+          <div className="textbox2">  <img className='img' src={props.Image} width='200px' height='100px' alt=""/>
           </div>
         </form>
     <br/>

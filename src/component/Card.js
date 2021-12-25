@@ -45,7 +45,7 @@ const FrontCard = () => {
       {!isLoading && Review.map((rev) => {
         return (
             <Grid  xs={12} sm={6} item md={3} >
-          <Card>
+          <Card key={rev.id}>
             <CardActionArea>
               <CardHeader
                 avatar={<Avatar alt={rev.Comment} src={rev.Avatar}/>}

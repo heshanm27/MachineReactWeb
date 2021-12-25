@@ -29,19 +29,24 @@ const Header = () => {
   const [checked, setChecked] = useState(false);
   return (
     <div className={classes.root}>
-   {!currentUser && <AppBar position="static">
+   {currentUser && <AppBar position="static">
   <Toolbar className={classes.toolbar}>
     <Typography variant="h6" className={classes.title}>
     Rosacrd.com
     </Typography>
    {!currentUser && <Link to="/login"> <Button  variant="outlined" endIcon={<ExitToAppIcon/>} >Login</Button></Link>}
    {currentUser && <Navlink
+          to='/warrenty'
+          name='DashBord'
+         
+        />}
+   {currentUser && <Navlink
           to='/logout'
           name='Logout'
           onClick={async e => {
             e.preventDefault()
             logout()
-            navigate('/login')
+            navigate('/')
           }}
         />}
   </Toolbar>
