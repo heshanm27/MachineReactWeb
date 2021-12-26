@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useStyles } from "./DrawerStyle";
 import Drawer from "@material-ui/core/Drawer";
-import { AppBar, CssBaseline, IconButton, List, Toolbar, Typography, useMediaQuery, useTheme } from "@material-ui/core";
+import { AppBar, Container, CssBaseline, IconButton, List, Toolbar, Typography, useMediaQuery, useTheme } from "@material-ui/core";
 import NavListitem from "./NavListitem";
 import Dashroutes from "./DashbordRoute";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
@@ -18,7 +18,7 @@ import { Outlet, useNavigate } from "react-router";
 function DashBordDarwer() {
     const theme = useTheme()
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
     const reslution = useMediaQuery(theme.breakpoints.down('sm'))
   const  navigate = useNavigate();
   const toggelNavigation = () => {
@@ -32,7 +32,7 @@ function DashBordDarwer() {
        
   }
   return (
-    <div className={classes.dashroot}>
+    <div className={classes.root}>
 
   { reslution && <AppBar>
         <Toolbar>
@@ -53,7 +53,9 @@ function DashBordDarwer() {
             classes.navigationDrawer,
             !open && classes.navigationDawercollapse
           ),
+          
         }}
+        anchor="left"
       >
         <div
           className={clsx(
@@ -85,6 +87,7 @@ function DashBordDarwer() {
                 icon={route.icon}
                 path={route.path}
                 onClick={closeNavigation}
+                key={index}
               />
             );
           })}
@@ -99,7 +102,7 @@ function DashBordDarwer() {
       </Drawer>
       <div className={classes.page}>
       <div className={classes.toolbar}></div>
-      <Outlet />
+      <Outlet  />
       </div>
     </div>
   );

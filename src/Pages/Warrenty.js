@@ -63,7 +63,10 @@ const userStyle = makeStyles((theme) => ({
     color: purple[2],
   },
   paper: {
-    padding: "40px",
+    padding: "10px",
+    [theme.breakpoints.up('sm')]:{
+      padding: "40px",
+     },
     marginTop: "20px",
   },
   submit: {
@@ -80,7 +83,10 @@ const userStyle = makeStyles((theme) => ({
       textAlign:'center'
   },buttons:{
       marginRight:'10px'
-  }
+  },main:{
+    [theme.breakpoints.down('sm')]:{
+        padding:'50px 10px'
+    }}
 }));
 
 const Warrenty = () => {

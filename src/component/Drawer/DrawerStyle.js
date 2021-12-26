@@ -1,13 +1,16 @@
 import { makeStyles } from "@material-ui/core";
 
 export const useStyles = makeStyles((theme) => ({
-    page: {
-        background: '#f9f9f9',
+  root: {
+    display: 'flex',
+   
+  }, page: {
+
+        background: theme.palette.background.paper,
         width: '100%',
+      
       },
-      dashroot: {
-        display: 'flex',
-      },
+   
   navgivationLogo: {
     width: "50%",
     cursor: "pointer",
@@ -17,6 +20,7 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: theme.spacing(6),
+    
   },
   navigationDrawer: {
     width: "240px",

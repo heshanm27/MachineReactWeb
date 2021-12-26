@@ -12,12 +12,10 @@ import Pdf from "../component/PdfDocument";
 import Login from "../Pages/Login/Login";
 import { ChakraProvider } from "@chakra-ui/react";
 import ForgotPassword from "../Pages/Login/Forgotpassword";
-import Layout from "../component/Layout";
 import ProtectedRoute from "./ProtectedRoute";
 import DashBordDarwer from "../component/Drawer/DrawerDashbord";
 import Additem from "../Pages/Additem";
 import Dashbord from "../Pages/Dashbord";
-import { ClassNames } from "@emotion/react";
 import { useStyles } from "../component/Drawer/DrawerStyle";
 
 const theme = createTheme({

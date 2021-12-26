@@ -44,7 +44,7 @@ const FrontCard = () => {
     <>
       {!isLoading && Review.map((rev) => {
         return (
-            <Grid  xs={12} sm={6} item md={3} >
+            <Grid  xs={12} sm={6} item md={3} key={rev.key} >
           <Card key={rev.id}>
             <CardActionArea>
               <CardHeader
@@ -71,7 +71,7 @@ const FrontCard = () => {
       {isLoading && [1,2,3,4].map(key=>{
       
         return (
-          <Grid  xs={12} sm={6} item md={3} >
+          <Grid  xs={12} sm={6} item md={3} key={key} >
           <Skeleton variant="circle" width={40} height={40} />
             <Skeleton variant="rect" width={210} height={118} />
           </Grid>
