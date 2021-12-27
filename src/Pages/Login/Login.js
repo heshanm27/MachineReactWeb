@@ -11,18 +11,21 @@ import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Container from '@material-ui/core/Container';
-import { Paper } from '@material-ui/core';
+import { FormControl, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper } from '@material-ui/core';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router';
 import { useToast } from '@chakra-ui/react';
-
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import clsx from "clsx";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href="#">
+      RosCard.com
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -52,7 +55,12 @@ const useStyles = makeStyles((theme) => ({
   },paper:{
       marginTop:'50px',
       padding:'20px'
-  }
+  }, margin: {
+   
+  },
+  textField: {
+    width: '100%',
+  },
 }));
 
 export default function Login() {
@@ -60,12 +68,21 @@ export default function Login() {
     const  navigate = useNavigate();
     const [email,setEmail] =useState('')
     const [password,setPassword] =useState('')
+    const [emailError,setEmailError] =useState(false)
+    const [passwordError,setPasswordError] =useState(true)
+    const [showPassword,setShowPassword]=useState(false)
   const classes = useStyles();
   const {login} = useAuth()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const handleShowPassword = ()=>{
 
+    setShowPassword(!showPassword)
+  }
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
     const handleLogin = async (e)=>{
 
         e.preventDefault()
@@ -114,6 +131,7 @@ export default function Login() {
           <TextField
             variant="outlined"
             margin="normal"
+            error={emailError}
             required
             fullWidth
             id="email"
@@ -123,22 +141,39 @@ export default function Login() {
             value={email}
             onChange={(e)=>setEmail(e.target.value)}
             autoFocus
+            helperText={emailError ?? "Please Enter Email"}
             color='secondary'
           />
-          <TextField
-            variant="outlined"
+               <FormControl className={clsx(classes.margin, classes.textField)} color='secondary' variant="outlined">
+          <InputLabel htmlFor="password">Password</InputLabel>
+          <OutlinedInput
             margin="normal"
             required
-            fullWidth
             name="password"
-            label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             value={password}
             onChange={(e)=>setPassword(e.target.value)}
             autoComplete="current-password"
             color='secondary'
-          />
+            error={passwordError}
+            helperTex="Incorrect entry."
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+
+            }
+            labelWidth={70}
+          /> 
+          {passwordError && <FormHelperText error={true}>Enter Password</FormHelperText>}
+       </FormControl>
           <FormControlLabel
             control={<Checkbox value="remember" color="secondary" />}
             label="Remember me"
