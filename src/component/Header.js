@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import Navlink from "../Context/Navlink";
 import { useNavigate } from 'react-router';
+import DashboardRoundedIcon from '@material-ui/icons/DashboardRounded';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -19,6 +20,8 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar:{
     margin:'auto 20px'
+  },appbar:{
+    color:'White'
   }
 }));
 
@@ -29,20 +32,23 @@ const Header = () => {
   const [checked, setChecked] = useState(false);
   return (
     <div className={classes.root}>
-   <AppBar position="static">
+   <AppBar position="static" className={classes.appbar} color="transparent" elevation="none">
   <Toolbar className={classes.toolbar}>
-    <Typography variant="h6" className={classes.title}>
+    <Typography variant="h6" className={classes.title} color="secondary">
     Rosacrd.com
     </Typography>
-   {!currentUser && <Link to="/login"> <Button  variant="outlined" endIcon={<ExitToAppIcon/>} >Login</Button></Link>}
+   {!currentUser && <Link to="/login"> <Button  variant="contained" endIcon={<ExitToAppIcon/>}  >Login</Button></Link>}
    {currentUser && <Navlink
-          to='/warrenty'
+          to='/dashbord'
           name='DashBord'
-         
+          variant='contained'
+        
         />}
    {currentUser && <Navlink
           to='/logout'
           name='Logout'
+          variant='outline'
+          color="secondary"
           onClick={async e => {
             e.preventDefault()
             logout()

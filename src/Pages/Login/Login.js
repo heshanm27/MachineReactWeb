@@ -69,7 +69,7 @@ export default function Login() {
     const [email,setEmail] =useState('')
     const [password,setPassword] =useState('')
     const [emailError,setEmailError] =useState(false)
-    const [passwordError,setPasswordError] =useState(true)
+    const [passwordError,setPasswordError] =useState(false)
     const [showPassword,setShowPassword]=useState(false)
   const classes = useStyles();
   const {login} = useAuth()

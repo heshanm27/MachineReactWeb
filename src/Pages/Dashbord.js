@@ -77,6 +77,9 @@ const userStyle = makeStyles((theme) => ({
   position: 'absolute',
   right: '10px'
 },  btn: {
+  [theme.breakpoints.down('xs')]:{
+    width: "50%",
+  },
   width: "70%",
   
 }
@@ -287,6 +290,7 @@ const Dashbord = () => {
             />
           </Paper>
           <PopUp
+          title="Testing pop up"
           openPopup={openPopup}
           setOpenPopUp={setOpenPopUp}
           >

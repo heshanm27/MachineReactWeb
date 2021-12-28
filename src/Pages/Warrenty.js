@@ -1,38 +1,23 @@
 import {
- Button as btn,
+  Button,
   Container,
   Grid,
   makeStyles,
   Typography,
   Paper,
   TextField,
-  FormControlLabel,
   CssBaseline,
-  Avatar,
-  TextareaAutosize,
-  Divider,
   CircularProgress,
 } from "@material-ui/core";
 import {
-  Button,
-  Input,
-  Stack,
   useToast,
-  Text,
-  IconButton,
-  InputGroup,
-  InputLeftAddon,
   HStack,
 } from "@chakra-ui/react";
 import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import { purple } from "@material-ui/core/colors";
 import { getByDisplayValue } from "@testing-library/react";
 import { useEffect, useState } from "react";
-import FrontCard from "../component/Card";
-import SendIcon from "@material-ui/icons/Send";
 import React, { useRef } from "react";
-import emailjs from "emailjs-com";
-import LoopIcon from "@material-ui/icons/Loop";
 import { Autocomplete } from "@material-ui/lab";
 import { db, storage } from "../init/firebaseinit";
 import { addDoc, collection, onSnapshot, query, where } from "firebase/firestore";
@@ -44,7 +29,6 @@ import {
 } from "@material-ui/pickers";
 import placeholderImage from '../img/placeholder.jpg'
 import { ref,getDownloadURL,uploadBytesResumable } from "firebase/storage";
-
 const userStyle = makeStyles((theme) => ({
   roots: {
     minHeight: "60vh",
@@ -91,7 +75,7 @@ const userStyle = makeStyles((theme) => ({
 
 const Warrenty = () => {
   const navigate = useNavigate();
-  const [spacing, setSpacing] = useState(5);
+ 
   const form = useRef();
   const classes = userStyle();
   const [options, setoptions] = useState([]);
@@ -99,7 +83,7 @@ const Warrenty = () => {
   const toast=useToast()
   const [pdfloading, setpdfloading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const hello = "hello";
+
   const [CodeGroup, setCodeGroup] = useState([]);
   const [BrandGroup, setBrandGroup] = useState([]);
 
@@ -109,7 +93,7 @@ const Warrenty = () => {
   const [user, setUser] = useState("Heshan Madhuranga");
   const [Brand, setBrand] = useState("");
   const [Code, setCode] = useState("");
-  const [curruntdates, setCurruntDate] = useState(new Date());
+  const [curruntdates, setCurruntDate] = useState(formatDate(new Date()));
   const [date, setdate] = useState(new Date());
   const [expireDate, setExpireDate] = useState("");
   const [technician, setTecnician] = useState("");
@@ -125,6 +109,25 @@ const Warrenty = () => {
   const [Url,setUrls] =useState("")
   //sendparamters
   const [params, setParams] = useState({});
+
+
+  function getUnique(arr, comp) {
+
+    // store the comparison  values in array
+const unique =  arr.map(e => e[comp])
+
+  // store the indexes of the unique objects
+  .map((e, i, final) => final.indexOf(e) === i && i)
+
+  // eliminate the false indexes & return unique objects
+ .filter((e) => arr[e]).map(e => arr[e]);
+
+return unique;
+}
+function formatDate(thedate) {
+  return thedate.getFullYear()+'/'+(thedate.getMonth()+1)+'/'+thedate.getDate(); 
+}
+
   //getCustomer data from firebase
   function getCustomerData() {
     //getdata in real time
@@ -137,9 +140,8 @@ const Warrenty = () => {
           ...doc.data(),
         });
       });
-    
-
-      setCustomer(post);
+    const uinique = getUnique(post,"CustomerName")
+      setCustomer(uinique);
     });
   }
 
@@ -156,7 +158,8 @@ const Warrenty = () => {
         });
       });
       console.log(post)
-      setBrandGroup(post);
+      const unique = getUnique(post,'Brand')
+      setBrandGroup(unique);
       setCodeGroup(post);
     });
   }
@@ -289,8 +292,8 @@ const Warrenty = () => {
   useEffect(() => {
     getEngineBrand();
     getCustomerData();
-    setExpireDate(new Date(date.setMonth(date.getMonth() + 3)));
-    console.log(customer);
+    setExpireDate(formatDate(new Date(date.setMonth(date.getMonth() + 3))));
+    console.log(curruntdates)
   }, []);
 
   //hadnle submit
@@ -359,7 +362,7 @@ const Warrenty = () => {
                   });
             }).catch((e)=>{
                 toast({
-                    description: e.message,
+                    description: "Error Occured When Sumbit ,Please Try Agian",
                     status: "error",
                     duration: 5000,
                     isClosable: true,
@@ -402,7 +405,6 @@ const Warrenty = () => {
                     }}
                     id="controllable"
                     freeSolo
-                    required
                     options={customer}
                     getOptionLabel={(option) => option.CustomerName}
                     renderInput={(params) => (
@@ -410,6 +412,7 @@ const Warrenty = () => {
                         {...params}
                         label="Customer Name"
                         variant="outlined"
+                        required
                        
                       />
                     )}
@@ -635,13 +638,13 @@ const Warrenty = () => {
                     onChange={e=>ImagePreview(e)}
                   />
                   <label htmlFor="contained-button-file">
-                   <btn
+                   <Button
                       variant="contained"
-                      color="#76ff03"
+                      color="primary"
                       component="span"
                     >
                       Upload
-                    </btn>
+                    </Button>
                   </label>
                 </HStack>
 
@@ -651,16 +654,15 @@ const Warrenty = () => {
               </Grid>
 
               <Grid item xs={12} sm={12} className={classes.grid}>
-                  
-            <Button
+             {loading && <CircularProgress color="secondary" /> }
+              {! loading &&  <Button
               variant="contained"
-              color=" #76ff03"
+              color="secondary"
               className={classes.buttons}
-                      isLoading={loading}
               type="submit"
             >
               Submit
-            </Button>
+            </Button> }
 
             { pdfloading &&   <Button
               variant="contained"
