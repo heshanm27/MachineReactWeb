@@ -90,7 +90,7 @@ const Warrenty = () => {
   //input values
   const [adddress, setAddress] = useState("");
   const [contactNo, setContactNo] = useState("");
-  const [user, setUser] = useState("Heshan Madhuranga");
+  const [user, setUser] = useState("");
   const [Brand, setBrand] = useState("");
   const [Code, setCode] = useState("");
   const [curruntdates, setCurruntDate] = useState(formatDate(new Date()));

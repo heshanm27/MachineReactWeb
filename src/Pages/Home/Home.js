@@ -34,14 +34,14 @@ const Home = () => {
     <>
     
      <Header/>
-      <Landing/>
+       <Landing/>
       <Divider variant="middle"/>
       <LearMore/>
       <Divider variant="middle"/>
       <Brand/>
       <Divider variant="middle"/>
       <ContactUs/>
-      <FooterPage/>
+      <FooterPage/> 
     </>
  
   );

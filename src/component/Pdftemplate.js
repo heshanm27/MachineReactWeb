@@ -60,7 +60,7 @@ export default function Pdftemplate({props}) {
         <form className='forms'>
         <div className="textbox1">
           <div><p>{props.NewParts}</p></div></div>
-          <div className="textbox2">  <img className='img' src={props.Image} width='200px' height='100px' alt=""/>
+          <div className="textbox2">  <img className='img' src={props.Image} width='200px' height='100px' alt="" style={{margin:'20px'}}/>
           </div>
         </form>
     <br/>

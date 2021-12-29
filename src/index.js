@@ -9,13 +9,13 @@ import "slick-carousel/slick/slick-theme.css";
 import AuthContextProvider from './Context/AuthContext';
 
 ReactDOM.render(
-  <React.StrictMode>
+ 
      <AuthContextProvider>
   <BrowserRouter>
     <App />
     </BrowserRouter>
     </AuthContextProvider>
-  </React.StrictMode>,
+,
   document.getElementById('root')
 );
 

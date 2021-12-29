@@ -24,6 +24,7 @@ const userStyle = makeStyles((theme) => ({
     textAlign: "center",
     maxWidth: "100%",
     backgroundColor: "#212121",
+    color:"white"
   },
   container: {
     width: "100%",
@@ -50,7 +51,7 @@ const FooterPage = () => {
               <Box pt={{ xs: 2, sm: 3 }}>
                 <Typography
                   variant="body2"
-                  color="text.Secondary"
+                  
                   component="p"
                   align="justify"
                 >

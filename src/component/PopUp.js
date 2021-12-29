@@ -2,14 +2,16 @@ import React from 'react'
 import { Button, Dialog, DialogContent, DialogTitle, IconButton, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import { theme } from '@chakra-ui/react';
+import { useTheme } from '@material-ui/core/styles';
 import EngineForm from '../Pages/FormPage/EngineForm';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 const useStyle = makeStyles((theme)=>({
 
     displaywraper:{
-        padding:theme.spacing(2),
+        padding:theme.spacing(1),
         position:'absolute',
-        top:theme.spacing(4)
+        top:theme.spacing(4),
+        width:'100%'
     },iconbtn:{
         '&.MuiIconButton-colorPrimary':{
             color:theme.palette.error.light
@@ -26,9 +28,11 @@ const useStyle = makeStyles((theme)=>({
 
 export default function PopUp(props) {
     const classes = useStyle()
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const{title,children,openPopup,setOpenPopUp} = props
     return (
-      <Dialog open={openPopup} maxWidth='lg' classes={{paper:classes.displaywraper}}>
+      <Dialog open={openPopup} maxWidth={fullScreen ?'sm':'md'} classes={{paper:classes.displaywraper}}>
           <DialogTitle>
           <div style={{display:'flex'}}>
                 <Typography varient="h6" component="div" style={{flexGrow:'1'}}>{title}</Typography>
@@ -40,7 +44,7 @@ export default function PopUp(props) {
                 </div>
           </DialogTitle>
           <DialogContent dividers >
-          <EngineForm/>
+        {children}
           </DialogContent>
       </Dialog>
     )

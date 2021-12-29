@@ -16,6 +16,7 @@ import {
   Toolbar,
   InputAdornment,
   Button,
+  IconButton,
 } from "@material-ui/core";
 import { useToast } from "@chakra-ui/react";
 import { purple } from "@material-ui/core/colors";
@@ -25,17 +26,23 @@ import { Autocomplete, Skeleton } from "@material-ui/lab";
 import { db } from "../init/firebaseinit";
 import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
+import DeleteIcon from '@material-ui/icons/Delete';
 import {
   addDoc,
   collection,
   onSnapshot,
-  query,
-  where,
+  doc,
+  updateDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import TableContainer from "@material-ui/core/TableContainer";
 import PopUp from "../component/PopUp";
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from "@material-ui/icons/Add";
+import EditIcon from '@material-ui/icons/Edit';
+import EngineForm from "./FormPage/EngineForm";
+import Notification from "../component/Notification/Notification";
+
 const userStyle = makeStyles((theme) => ({
   roots: {
     minHeight: "100vh",
@@ -52,7 +59,7 @@ const userStyle = makeStyles((theme) => ({
       padding: "40px",
     },
     marginTop: "20px",
-    height: "80vh",
+    height: "auto",
   },
   table: {
     marginTop: theme.spacing(3),
@@ -64,7 +71,7 @@ const userStyle = makeStyles((theme) => ({
       fontWeight: "400",
     },
     "& tbody tr:hover": {
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor:theme.palette.grey[100],
       cursor: "pointer",
     },
   },
@@ -74,15 +81,29 @@ const userStyle = makeStyles((theme) => ({
     },
   },
   newButton: {
-  position: 'absolute',
-  right: '10px'
-},  btn: {
-  [theme.breakpoints.down('xs')]:{
-    width: "50%",
+    position: "absolute",
+    right: "10px",
   },
-  width: "70%",
-  
-}
+  btn: {
+    [theme.breakpoints.down("xs")]: {
+      width: "50%",
+    },
+    width: "70%",
+  },
+
+  secondary: {
+    backgroundColor: theme.palette.secondary.light,
+    '& .MuiButton-label': {
+        color: theme.palette.secondary.main,
+    },
+    margin: theme.spacing(0.5)
+},
+primary: {
+    backgroundColor: theme.palette.error.light,
+    '& .MuiButton-label': {
+        color: theme.palette.primary.light,
+    }
+},
 }));
 
 const Dashbord = () => {
@@ -93,17 +114,26 @@ const Dashbord = () => {
   const [Loading, setLoading] = useState(false);
 
   //pageNation and sorting
-  const pages = [ 5, 10, 25];
+  const pages = [5, 10, 25];
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("Brand");
-  const [searchFilter, setSearchFilter] = useState({fn:items=>{return items;}});
-  const [openPopup,setOpenPopUp] = useState(false)
+  const colRef = collection(db, "Engine");
+  const [notify,setNotify]=useState({isOpen:false,message:'',type:''})
+  const [searchFilter, setSearchFilter] = useState({
+    fn: (items) => {
+      return items;
+    },
+  });
+
+  const [recordForEdit,setRecordForEdit]=useState(null)
+  const [openPopup, setOpenPopUp] = useState(false);
   const tableHeader = [
     { id: "Brand", Header: "Brand1" },
     { id: "id", Header: "Brand2" },
     { id: "Code", Header: "Brand3" },
+    { id: "action", Header: "Actions", diableSorting: true },
   ];
 
   const handlePageChange = (event, newPage) => {
@@ -139,18 +169,15 @@ const Dashbord = () => {
     return stabilizedThis.map((el) => el[0]);
   }
 
-  const handleSearch = e => {
+  const handleSearch = (e) => {
     let target = e.target.value.toLowerCase();
     setSearchFilter({
-        fn: items => {
-            if (target== "")
-                return items;
-            else
-                return items.filter(x => x.Brand.toLowerCase().includes(target))
-        }
-    })
-}
-
+      fn: (items) => {
+        if (target == "") return items;
+        else return items.filter((x) => x.Brand.toLowerCase().includes(target));
+      },
+    });
+  };
 
   const recordsAfterPagingAndSorting = () => {
     return stableSort(
@@ -180,14 +207,84 @@ const Dashbord = () => {
     });
   }
 
+  //handle update popup 
+  const addOrEdit=(values)=>{
+    if(values.id === 0){
+        addDoc(colRef, {
+          Brand: values.Brand,
+          Code: values.Code,
+        })
+          .then(() => {
+            toast({
+              description: "Product Successfully Added",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            });
+            setOpenPopUp(false)
+          })
+          .catch((e) => {
+            toast({
+              description: "Error Occur",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
+          });
+    }else{
+      const docRef = doc(db, "Engine",values.id);
+      updateDoc(docRef,{
+        Brand:values.Brand,
+        Code:values.Code
+      }).then(()=>{
+  
+        toast({
+          description: "Details Successfully Updated",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        setOpenPopUp(false)
+        setRecordForEdit(null)
+  
+      }).catch(()=>{
+        toast({
+          description: "Error Occur",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      })
+    }
+  }
+
+  const updatepopUp=(e,item)=>{
+
+    setRecordForEdit(item)
+    setOpenPopUp(true)
+  }
+
+  const handleDelete=(id)=>{
+    const docRef = doc(db, "Engine",id);
+
+    deleteDoc(docRef).then(()=>{
+      setNotify({
+        isOpen:true,
+        message:'Successfully Deleted',
+        type:'success'
+      })
+    }).catch((e)=>{
+      setNotify({
+        isOpen:true,
+        message:'Error Occurd',
+        type:'error'
+      })
+    })
+  }
 
   useEffect(() => {
     getData();
   }, []);
-
-
-
-
 
   return (
     <div className={classes.roots} id="review">
@@ -198,7 +295,7 @@ const Dashbord = () => {
             DashBord
           </Typography>
           <Paper className={classes.paper}>
-            <Toolbar  >
+            <Toolbar>
               <TextField
                 size="small"
                 className={classes.btn}
@@ -214,15 +311,15 @@ const Dashbord = () => {
                   ),
                 }}
               />
-                
+
               <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<AddIcon/>}
-              className={classes.newButton}
-              onClick={()=>setOpenPopUp(true)}
+                variant="outlined"
+                color="secondary"
+                startIcon={<AddIcon />}
+                className={classes.newButton}
+                onClick={() => setOpenPopUp(true)}
               >
-              Add Item
+                Add Item
               </Button>
             </Toolbar>
             <TableContainer>
@@ -254,6 +351,24 @@ const Dashbord = () => {
                         <TableCell> {item.Brand}</TableCell>
                         <TableCell> {item.id}</TableCell>
                         <TableCell> {item.Code}</TableCell>
+                        <TableCell>
+                          {" "}
+                          <IconButton
+                           
+                            aria-label="edit"
+                            className={classes.secondary}
+                            onClick={(e)=>updatepopUp(e,item)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                                 className={classes.primary}
+                            aria-label="delete"
+                            onClick={()=>handleDelete(item.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -290,12 +405,14 @@ const Dashbord = () => {
             />
           </Paper>
           <PopUp
-          title="Testing pop up"
-          openPopup={openPopup}
-          setOpenPopUp={setOpenPopUp}
+            title="Update Data"
+            openPopup={openPopup}
+            setOpenPopUp={setOpenPopUp}
           >
 
+<EngineForm addOrEdit={addOrEdit} recordForEdit={recordForEdit}/>
           </PopUp>
+          <Notification notify={notify} setNotify={setNotify}/>
         </div>
       </Container>
     </div>

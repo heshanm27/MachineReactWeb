@@ -64,10 +64,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login() {
+
+  
+
     const toast=useToast()
     const  navigate = useNavigate();
     const [email,setEmail] =useState('')
     const [password,setPassword] =useState('')
+    const [errors,setErrors] = useState({})
     const [emailError,setEmailError] =useState(false)
     const [passwordError,setPasswordError] =useState(false)
     const [showPassword,setShowPassword]=useState(false)
@@ -83,33 +87,41 @@ export default function Login() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+
+  const validate=()=>{
+      let temp={}
+
+      temp.Email = ((/$^|.+@.+..+/).test(email)  ? "":"Email is Not Valid") || (email?"":"This Field is Required")
+      temp.Password = password ?"":"This Field is Required"
+      setErrors({
+        ...temp
+      })
+      return Object.values(temp).every((x)=>x == "")
+  }
     const handleLogin = async (e)=>{
 
         e.preventDefault()
         // your login logic here
+    
+        if(validate()){
+          console.log(validate())
+          login(email,password)
+          .then(res=>navigate('/dashbord'))
+          .catch((e)=>{
+              toast({
+                  description: "Email Or PassWord Invalid",
+                  status: 'error',
+                  duration: 9000,
+                  isClosable: true,
+                })
+          }).finally(()=>setIsSubmitting(false))
 
-        if(!email || !password){
-            toast({
-                description:"Credentials not valid",
-                status:'error',
-                duration:5000,
-                isClosable:true
-              })
-          return
         }
 
-        login(email,password)
-            .then(res=>navigate('/dashbord'))
-            .catch((e)=>{
-                toast({
-                    description: e.message,
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                  })
-            }).finally(()=>setIsSubmitting(false))
+      
 
-
+          
           }
 
     
@@ -131,7 +143,7 @@ export default function Login() {
           <TextField
             variant="outlined"
             margin="normal"
-            error={emailError}
+            error={errors.Email ? true:false}
             required
             fullWidth
             id="email"
@@ -141,13 +153,13 @@ export default function Login() {
             value={email}
             onChange={(e)=>setEmail(e.target.value)}
             autoFocus
-            helperText={emailError ?? "Please Enter Email"}
+            helperText={errors.Email}
             color='secondary'
           />
                <FormControl className={clsx(classes.margin, classes.textField)} color='secondary' variant="outlined">
           <InputLabel htmlFor="password">Password</InputLabel>
           <OutlinedInput
-            margin="normal"
+            
             required
             name="password"
             type={showPassword ? 'text' : 'password'}
@@ -156,8 +168,7 @@ export default function Login() {
             onChange={(e)=>setPassword(e.target.value)}
             autoComplete="current-password"
             color='secondary'
-            error={passwordError}
-            helperTex="Incorrect entry."
+            error={errors.Password ? true:false}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -172,7 +183,7 @@ export default function Login() {
             }
             labelWidth={70}
           /> 
-          {passwordError && <FormHelperText error={true}>Enter Password</FormHelperText>}
+   {errors.Password && <FormHelperText error={true}>Enter Password</FormHelperText>}
        </FormControl>
           <FormControlLabel
             control={<Checkbox value="remember" color="secondary" />}

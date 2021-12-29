@@ -32,12 +32,12 @@ const Header = () => {
   const [checked, setChecked] = useState(false);
   return (
     <div className={classes.root}>
-   <AppBar position="static" className={classes.appbar} color="transparent" elevation="none">
+   <AppBar position="static" className={classes.appbar} color="transparent" elevation={0}>
   <Toolbar className={classes.toolbar}>
     <Typography variant="h6" className={classes.title} color="secondary">
     Rosacrd.com
     </Typography>
-   {!currentUser && <Link to="/login"> <Button  variant="contained" endIcon={<ExitToAppIcon/>}  >Login</Button></Link>}
+   {!currentUser && <Link to="/login"> <Button  variant="contained" endIcon={<ExitToAppIcon/>} color="primary"  >Login</Button></Link>}
    {currentUser && <Navlink
           to='/dashbord'
           name='DashBord'
