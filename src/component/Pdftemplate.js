@@ -12,7 +12,10 @@ export default function Pdftemplate({props}) {
           <div className="main-title">
             GALLAGE MOTORS (PVT) LTD.DAMBULLA <span className="hilight-text">0112405235</span> <br/>
           </div>
-          <div className="sub-title">
+          <div className="sub-title1">
+            <span className="hilight-text">Bill No-:</span>   <span className="hilight-text">{props.BillNo}</span> 
+          </div>
+          <div className="sub-title"> 
             <span className="hilight-text">WARRANTY CERTIFICATE</span> for repaired Common Rail Injector
           </div>
         </div>
@@ -29,18 +32,14 @@ export default function Pdftemplate({props}) {
               </tr>
               <tr>
                 <td className="table-data">Address : <input value={props.Address} type="text"/></td>
-                <td className="table-data left">Bill No : <input value={props.dateRepair} type="text"/><br/></td>
-              </tr>
-              <tr>
-                <td className="table-data">Vehicle : <input value={props.Brand} type="text"/></td>
                 <td className="table-data left">Technician : <input value={props.Technician} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Registration No. : <input value={props.RegistarationNo} type="text"/></td>
+                <td className="table-data">Vehicle : <input value={props.Brand} type="text"/></td>
                 <td className="table-data left">Contact No. : <input  value={props.TechnicianContactNo} type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data"> Address : <input value={props.Address} type="text" style={{width: '200px'}}/><br/></td>
+                <td className="table-data">Registration No. : <input value={props.RegistarationNo} type="text"/></td>
               </tr>
             </tbody>
           </table>

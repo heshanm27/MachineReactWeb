@@ -42,6 +42,7 @@ import AddIcon from "@material-ui/icons/Add";
 import EditIcon from '@material-ui/icons/Edit';
 import EngineForm from "./FormPage/EngineForm";
 import Notification from "../component/Notification/Notification";
+import ConfirmDialog from "../component/ConfirmDialog/ConfirmDialog";
 
 const userStyle = makeStyles((theme) => ({
   roots: {
@@ -121,6 +122,7 @@ const Dashbord = () => {
   const [orderBy, setOrderBy] = useState("Brand");
   const colRef = collection(db, "Engine");
   const [notify,setNotify]=useState({isOpen:false,message:'',type:''})
+  const [confirmDialog,setConfirmDialog]=useState({isOpen:false,title:'',subtitle:''})
   const [searchFilter, setSearchFilter] = useState({
     fn: (items) => {
       return items;
@@ -266,7 +268,10 @@ const Dashbord = () => {
 
   const handleDelete=(id)=>{
     const docRef = doc(db, "Engine",id);
-
+      setConfirmDialog({
+        ...confirmDialog,
+        isOpen:false
+      })
     deleteDoc(docRef).then(()=>{
       setNotify({
         isOpen:true,
@@ -352,9 +357,9 @@ const Dashbord = () => {
                         <TableCell> {item.id}</TableCell>
                         <TableCell> {item.Code}</TableCell>
                         <TableCell>
-                          {" "}
+                        
                           <IconButton
-                           
+                           size="small"
                             aria-label="edit"
                             className={classes.secondary}
                             onClick={(e)=>updatepopUp(e,item)}
@@ -362,9 +367,18 @@ const Dashbord = () => {
                             <EditIcon />
                           </IconButton>
                           <IconButton
+                          size="small"
                                  className={classes.primary}
                             aria-label="delete"
-                            onClick={()=>handleDelete(item.id)}
+                            onClick={()=>{
+                              setConfirmDialog({
+                                isOpen:true,
+                                title:'Are you sure to delete this record?',
+                                subTitle:"You can't undo this operation",
+                                onConfirm:()=>handleDelete(item.id)
+                              })
+                             
+                              }}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -413,6 +427,7 @@ const Dashbord = () => {
 <EngineForm addOrEdit={addOrEdit} recordForEdit={recordForEdit}/>
           </PopUp>
           <Notification notify={notify} setNotify={setNotify}/>
+          <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}/>
         </div>
       </Container>
     </div>

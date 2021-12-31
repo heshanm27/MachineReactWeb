@@ -9,10 +9,7 @@ import {
   CssBaseline,
   CircularProgress,
 } from "@material-ui/core";
-import {
-  useToast,
-  HStack,
-} from "@chakra-ui/react";
+import { useToast, HStack } from "@chakra-ui/react";
 import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import { purple } from "@material-ui/core/colors";
 import { getByDisplayValue } from "@testing-library/react";
@@ -20,15 +17,21 @@ import { useEffect, useState } from "react";
 import React, { useRef } from "react";
 import { Autocomplete } from "@material-ui/lab";
 import { db, storage } from "../init/firebaseinit";
-import { addDoc, collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import placeholderImage from '../img/placeholder.jpg'
-import { ref,getDownloadURL,uploadBytesResumable } from "firebase/storage";
+import placeholderImage from "../img/placeholder.jpg";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 const userStyle = makeStyles((theme) => ({
   roots: {
     minHeight: "60vh",
@@ -48,9 +51,9 @@ const userStyle = makeStyles((theme) => ({
   },
   paper: {
     padding: "10px",
-    [theme.breakpoints.up('sm')]:{
+    [theme.breakpoints.up("sm")]: {
       padding: "40px",
-     },
+    },
     marginTop: "20px",
   },
   submit: {
@@ -61,26 +64,30 @@ const userStyle = makeStyles((theme) => ({
   },
   inputs: {
     display: "none",
-  },img:{
-      display:'flex',
-     alignContent:'center',
-      textAlign:'center'
-  },buttons:{
-      marginRight:'10px'
-  },main:{
-    [theme.breakpoints.down('sm')]:{
-        padding:'50px 10px'
-    }}
+  },
+  img: {
+    display: "flex",
+    alignContent: "center",
+    textAlign: "center",
+  },
+  buttons: {
+    marginRight: "10px",
+  },
+  main: {
+    [theme.breakpoints.down("sm")]: {
+      padding: "50px 10px",
+    },
+  },
 }));
 
 const Warrenty = () => {
   const navigate = useNavigate();
- 
+
   const form = useRef();
   const classes = userStyle();
   const [options, setoptions] = useState([]);
   const [customer, setCustomer] = useState([]);
-  const toast=useToast()
+  const toast = useToast();
   const [pdfloading, setpdfloading] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -102,31 +109,40 @@ const Warrenty = () => {
   const [InjectorMake, setInjectorMake] = useState("");
   const [InjectorNo, setInjectorNo] = useState("");
   const [InjectorCode, setInjectorCode] = useState("");
-  const [profileImg,setprofileImg]=useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
+  const [profileImg, setprofileImg] = useState(
+    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+  );
   const [images, setImages] = useState([]);
-  const [newParts,setNewParts]=useState("")
-  const [progress,setProgress]= useState(0)
-  const [Url,setUrls] =useState("")
+  const [newParts, setNewParts] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [Url, setUrls] = useState("");
+  const [BillNo, setBillNo] = useState("");
   //sendparamters
   const [params, setParams] = useState({});
 
-
   function getUnique(arr, comp) {
-
     // store the comparison  values in array
-const unique =  arr.map(e => e[comp])
+    const unique = arr
+      .map((e) => e[comp])
 
-  // store the indexes of the unique objects
-  .map((e, i, final) => final.indexOf(e) === i && i)
+      // store the indexes of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
 
-  // eliminate the false indexes & return unique objects
- .filter((e) => arr[e]).map(e => arr[e]);
+      // eliminate the false indexes & return unique objects
+      .filter((e) => arr[e])
+      .map((e) => arr[e]);
 
-return unique;
-}
-function formatDate(thedate) {
-  return thedate.getFullYear()+'/'+(thedate.getMonth()+1)+'/'+thedate.getDate(); 
-}
+    return unique;
+  }
+  function formatDate(thedate) {
+    return (
+      thedate.getFullYear() +
+      "/" +
+      (thedate.getMonth() + 1) +
+      "/" +
+      thedate.getDate()
+    );
+  }
 
   //getCustomer data from firebase
   function getCustomerData() {
@@ -140,7 +156,7 @@ function formatDate(thedate) {
           ...doc.data(),
         });
       });
-    const uinique = getUnique(post,"CustomerName")
+      const uinique = getUnique(post, "CustomerName");
       setCustomer(uinique);
     });
   }
@@ -157,8 +173,8 @@ function formatDate(thedate) {
           ...doc.data(),
         });
       });
-      console.log(post)
-      const unique = getUnique(post,'Brand')
+      console.log(post);
+      const unique = getUnique(post, "Brand");
       setBrandGroup(unique);
       setCodeGroup(post);
     });
@@ -167,36 +183,40 @@ function formatDate(thedate) {
   //check user is exits or not
   function checkCustomer(name) {
     //firestore query
-    console.log(name)
+    console.log(name);
     setUser(name);
-    const result = customer.filter(customer => customer.CustomerName === name);
-   
-    if(result.length === 0){
+    const result = customer.filter(
+      (customer) => customer.CustomerName === name
+    );
+
+    if (result.length === 0) {
       setUser(name);
-      console.log('filter')
-      return
-    }else{
-      console.log('firebase')
-    const collectionRef = collection(db, "Warrenty");
-    const q = query(collectionRef, where("CustomerName", "==", result[0].CustomerName));
-    //get data for that query
-    onSnapshot(q, (snapshot) => {
-      let post = [];
-      snapshot.docs.map((doc) => {
-        post.push({
-          key: doc.id,
-          ...doc.data(),
+      console.log("filter");
+      return;
+    } else {
+      console.log("firebase");
+      const collectionRef = collection(db, "Warrenty");
+      const q = query(
+        collectionRef,
+        where("CustomerName", "==", result[0].CustomerName)
+      );
+      //get data for that query
+      onSnapshot(q, (snapshot) => {
+        let post = [];
+        snapshot.docs.map((doc) => {
+          post.push({
+            key: doc.id,
+            ...doc.data(),
+          });
         });
-      });
-      console.log(post);
+        console.log(post);
         post.map((user) => {
           setUser(user.CustomerName);
           setAddress(user.Address);
           setContactNo(user.ContactNo);
         });
-    });
-  }
-    
+      });
+    }
   }
   //check Brand is exits or not
   function checkEngine(name) {
@@ -269,108 +289,141 @@ function formatDate(thedate) {
   const handleDateExpireChange = (date) => {
     setExpireDate(date);
   };
- 
+
   //hadnle image
-  const ImagePreview = (e)=>{
+  const ImagePreview = (e) => {
     setImages([]);
-    const image = document.getElementById('handleImage')
-      const reader = new FileReader();
-      reader.onload = ()=>{
-          if(reader.readyState === 2){
-            setprofileImg( reader.result)
-          }
+    const image = document.getElementById("handleImage");
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setprofileImg(reader.result);
       }
+    };
 
-      reader.readAsDataURL(e.target.files[0])
+    reader.readAsDataURL(e.target.files[0]);
 
-      
     for (let i = 0; i < e.target.files.length; i++) {
       setImages((prevState) => [...prevState, e.target.files[i]]);
     }
-        
-  }
+  };
   useEffect(() => {
     getEngineBrand();
     getCustomerData();
     setExpireDate(formatDate(new Date(date.setMonth(date.getMonth() + 3))));
-    console.log(curruntdates)
+    console.log(curruntdates);
+    console.log(GenarateBillNo());
   }, []);
 
+  //Reset value
+  const reset = () => {
+    setAddress("");
+    setContactNo("");
+    setUser("");
+    setBrand("");
+    setCode("");
+
+    setTecnician("");
+    settechnicianContactNo("");
+    setRegistarationNo("");
+    setInjectorMake("");
+    setInjectorNo("");
+    setInjectorCode("");
+
+    setNewParts("");
+    setUrls("");
+    setBillNo("");
+  };
+  //genarate billno
+  const GenarateBillNo = () => {
+    const day = new Date();
+    const monthe = day.getMonth() + 1;
+    const Year = day.getFullYear();
+    const random = Math.floor(Math.random() * 1000) + 1;
+    const billNo = Year.toString() + monthe.toString() + random.toString();
+
+    setBillNo(billNo);
+  };
   //hadnle submit
 
-  const handleSubmit = (e)=>{
-    e.preventDefault()
-    setLoading(true)
-    setUrls([])
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    GenarateBillNo();
+    setLoading(true);
+    setUrls([]);
     const colRef = collection(db, "Warrenty");
-        const promises=[];
-        images.map((image) => {
-            const storageRef = ref(storage, `Productimages/${image.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, image);
-            promises.push(uploadTask);
-           
-            uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-              const prog = Math.round(
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-              );
-              setProgress(prog);
-            },
-            (e) =>  toast({
-                description: e.message,
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-              }),
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                console.log("File available at", downloadURL);
-                setUrls(downloadURL.toString())
-                console.log(Url)
-              });
-            });
-             
+    const promises = [];
+    images.map((image) => {
+      const storageRef = ref(storage, `Productimages/${image.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image);
+      promises.push(uploadTask);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const prog = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(prog);
+        },
+        (e) =>
+          toast({
+            description: e.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          }),
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+            setUrls(downloadURL.toString());
+            console.log(Url);
+          });
+        }
+      );
+    });
+
+    Promise.all(promises).then(() => {
+      console.log(Url);
+      addDoc(colRef, {
+        CustomerName: user,
+        DateOfRepair: curruntdates,
+        WarrentyTill: expireDate,
+        Address: adddress,
+        ContactNo: contactNo,
+        Technician: technician,
+        VehicalBrand: Brand,
+        TechnicianContactNo: technicianContactNo,
+        RegistartionNo: RegistarationNo,
+        EngineCode: Code,
+        InjectorMake: InjectorMake,
+        InjectorNo: InjectorNo,
+        InjectorCode: InjectorCode,
+        newPartsDetails: newParts,
+        PartImage: Url,
+        BillNo: BillNo,
+      })
+        .then(() => {
+          setLoading(false);
+          setpdfloading(true);
+          toast({
+            description: "Product Successfully Added",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
         })
+        .catch((e) => {
+          toast({
+            description: "Error Occured When Sumbit ,Please Try Agian",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        });
+    });
+  };
 
-          Promise.all(promises).then(()=>{
-
-            addDoc(colRef,{
-                CustomerName:user,
-                DateOfRepair:curruntdates,
-                WarrentyTill:expireDate,
-                Address:adddress,
-                ContactNo:contactNo,
-                Technician:technician,
-                VehicalBrand:Brand,
-                TechnicianContactNo:technicianContactNo,
-                RegistartionNo:RegistarationNo,
-                EngineCode:Code,
-                InjectorMake:InjectorMake,
-                InjectorNo:InjectorNo,
-                InjectorCode:InjectorCode,
-                newPartsDetails:newParts,
-                PartImage:Url
-            }).then(()=>{
-              setLoading(false)
-              setpdfloading(true)
-                toast({
-                    description: "Product Successfully Added",
-                    status: "success",
-                    duration: 5000,
-                    isClosable: true,
-                  });
-            }).catch((e)=>{
-                toast({
-                    description: "Error Occured When Sumbit ,Please Try Agian",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                  }); 
-            })
-          })
-
-  }
   return (
     <div className={classes.roots} id="review">
       <Container component="main" maxWidth="md">
@@ -383,24 +436,16 @@ function formatDate(thedate) {
             <form
               ref={form}
               className={classes.form}
-              onSubmit={e=>handleSubmit(e)}
+              onSubmit={(e) => handleSubmit(e)}
               autoComplete="none"
-              
+              id="submitForm"
             >
               <Grid container spacing={4}>
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  className={classes.grid}
-                 
-                >
-                
+                <Grid item xs={12} sm={6} className={classes.grid}>
                   {/*Customer Name*/}
                   <Autocomplete
-                
                     inputValue={user}
-                    onInputChange ={(event, newInputValue) => {
+                    onInputChange={(event, newInputValue) => {
                       checkCustomer(newInputValue);
                     }}
                     id="controllable"
@@ -413,7 +458,6 @@ function formatDate(thedate) {
                         label="Customer Name"
                         variant="outlined"
                         required
-                       
                       />
                     )}
                   />
@@ -426,7 +470,6 @@ function formatDate(thedate) {
                     id="address"
                     label="Address"
                     name="address"
-                  
                     onChange={(e) => setAddress(e.target.value)}
                     value={adddress}
                   />
@@ -441,7 +484,6 @@ function formatDate(thedate) {
                     name="ContactNo"
                     value={contactNo}
                     onChange={(e) => setContactNo(e.target.value)}
-             
                   />
                   {/*Engine Brand*/}
                   <Autocomplete
@@ -471,11 +513,10 @@ function formatDate(thedate) {
                     name="RegistrationNo"
                     value={RegistarationNo}
                     onChange={(e) => setRegistarationNo(e.target.value)}
-                
                   />
                 </Grid>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Grid item xs={12} sm={6} >
+                  <Grid item xs={12} sm={6}>
                     {/*Date of Repair*/}
                     <KeyboardDatePicker
                       disableToolbar
@@ -519,7 +560,6 @@ function formatDate(thedate) {
                       name="Technician"
                       value={technician}
                       onChange={(e) => setTecnician(e.target.value)}
-                     
                     />
 
                     {/*Technician Contact No */}
@@ -534,7 +574,6 @@ function formatDate(thedate) {
                       name="Technician Contact No"
                       value={technicianContactNo}
                       onChange={(e) => settechnicianContactNo(e.target.value)}
-                    
                     />
                   </Grid>
                 </MuiPickersUtilsProvider>
@@ -575,7 +614,6 @@ function formatDate(thedate) {
                     name="InjectorMake"
                     value={InjectorMake}
                     onChange={(e) => setInjectorMake(e.target.value)}
-                    
                   />
 
                   {/*InjectorNo */}
@@ -590,7 +628,6 @@ function formatDate(thedate) {
                     name="InjectorNo"
                     value={InjectorNo}
                     onChange={(e) => setInjectorNo(e.target.value)}
-                 
                   />
                   {/*InjectorCode*/}
 
@@ -604,7 +641,6 @@ function formatDate(thedate) {
                     name="InjectorCode"
                     value={InjectorCode}
                     onChange={(e) => setInjectorCode(e.target.value)}
-                   
                   />
                 </Grid>
 
@@ -621,77 +657,85 @@ function formatDate(thedate) {
                     multiline
                     minRows="10"
                     onChange={(e) => setNewParts(e.target.value)}
-                
                   />
                 </Grid>
 
                 <Grid item xs={12} sm={4} className={classes.grid}>
-                <HStack>
-
-                <img src={profileImg} alt="placeholder image" width='200px' height='200px' id="placeholderImage" accept="image/*"/>
-                <CircularProgress variant="determinate" value={progress} />
-                <input
-                    accept="image/*"
-                    className={classes.inputs}
-                    id="contained-button-file"
-                    type="file"
-                    onChange={e=>ImagePreview(e)}
-                  />
-                  <label htmlFor="contained-button-file">
-                   <Button
-                      variant="contained"
-                      color="primary"
-                      component="span"
-                    >
-                      Upload
-                    </Button>
-                  </label>
-                </HStack>
-
-                
+                  <HStack>
+                    <img
+                      src={profileImg}
+                      alt="placeholder image"
+                      width="200px"
+                      height="200px"
+                      id="placeholderImage"
+                      accept="image/*"
+                    />
+                    <CircularProgress variant="determinate" value={progress} />
+                    <input
+                      accept="image/*"
+                      className={classes.inputs}
+                      id="contained-button-file"
+                      type="file"
+                      onChange={(e) => ImagePreview(e)}
+                    />
+                    <label htmlFor="contained-button-file">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                      >
+                        Upload
+                      </Button>
+                    </label>
+                  </HStack>
                 </Grid>
-              
               </Grid>
 
               <Grid item xs={12} sm={12} className={classes.grid}>
-             {loading && <CircularProgress color="secondary" /> }
-              {! loading &&  <Button
-              variant="contained"
-              color="secondary"
-              className={classes.buttons}
-              type="submit"
-            >
-              Submit
-            </Button> }
+                {loading && <CircularProgress color="secondary" />}
+                {!loading && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    className={classes.buttons}
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                )}
 
-            { pdfloading &&   <Button
-              variant="contained"
-              color="#76ff03"
-              onClick={() => {
-                navigate("/pdf", { state: { Brand: Brand,
-                  EngineCode: Code,
-                 Address:adddress,
-                 CustomerName:user,
-                dateRepair:curruntdates,
-                WarrentyTill:expireDate,
-                Technician:technician,
-                TechnicianContactNo:technicianContactNo,
-                RegistarationNo:RegistarationNo,
-                InjectorMake:InjectorMake,
-                InjectorNo:InjectorNo,
-                InjectorCode:InjectorCode,
-                NewParts:newParts,
-               Image:Url,
-               contactNo:contactNo
-                 } });
-              }}
-            >
-              Genrate Pdf
-            </Button>}
+                {pdfloading && (
+                  <Button
+                    variant="contained"
+                    color="#76ff03"
+                    onClick={() => {
+                      navigate("/pdf", {
+                        state: {
+                          Brand: Brand,
+                          EngineCode: Code,
+                          Address: adddress,
+                          CustomerName: user,
+                          dateRepair: curruntdates,
+                          WarrentyTill: expireDate,
+                          Technician: technician,
+                          TechnicianContactNo: technicianContactNo,
+                          RegistarationNo: RegistarationNo,
+                          InjectorMake: InjectorMake,
+                          InjectorNo: InjectorNo,
+                          InjectorCode: InjectorCode,
+                          NewParts: newParts,
+                          Image: Url,
+                          contactNo: contactNo,
+                          BillNo: BillNo,
+                        },
+                      });
+                    }}
+                  >
+                    Genrate Pdf
+                  </Button>
+                )}
               </Grid>
             </form>
-
-         
           </Paper>
         </div>
       </Container>
