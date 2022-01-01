@@ -23,23 +23,23 @@ export default function Pdftemplate({props}) {
           <table className="main-table">
             <tbody>
               <tr>
-                <td className="table-data">Name :<input type="text" value={props.CustomerName} /></td>
-                <td className="table-data left">Date of Repair :<input  value={props.dateRepair} type="text"/><br/></td>
+                <td className="table-data">Name :<input type="text" defaultValue={props.CustomerName}  readOnly/></td>
+                <td className="table-data left">Date of Repair :<input  defaultValue={props.DateOfRepair} readOnly/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Contact No. : <input value={props.contactNo}  type="text" /></td>
-                <td className="table-data left">Warranty Till : <input  value={props.WarrentyTill} type="text"/><br/></td>
+                <td className="table-data">Contact No. : <input defaultValue={props.ContactNo} readOnly type="text" /></td>
+                <td className="table-data left">Warranty Till : <input  defaultValue={props.WarrentyTill} readOnly type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Address : <input value={props.Address} type="text"/></td>
-                <td className="table-data left">Technician : <input value={props.Technician} type="text"/><br/></td>
+                <td className="table-data">Address : <input defaultValue={props.Address} readOnly type="text"/></td>
+                <td className="table-data left">Technician : <input defaultValue={props.Technician} readOnly type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Vehicle : <input value={props.Brand} type="text"/></td>
-                <td className="table-data left">Contact No. : <input  value={props.TechnicianContactNo} type="text"/><br/></td>
+                <td className="table-data">Vehicle : <input defaultValue={props.VehicalBrand} readOnly type="text"/></td>
+                <td className="table-data left">Contact No. : <input  defaultValue={props.TechnicianContactNo} readOnly type="text"/><br/></td>
               </tr>
               <tr>
-                <td className="table-data">Registration No. : <input value={props.RegistarationNo} type="text"/></td>
+                <td className="table-data">Registration No. : <input defaultValue={props.RegistartionNo} readOnly type="text"/></td>
               </tr>
             </tbody>
           </table>
@@ -48,18 +48,18 @@ export default function Pdftemplate({props}) {
       
         <div className="midle-area">
           <form>
-            Engine Code : <input value={props.EngineCode} type="text"/><br/>
-            Injector Make : <input value={props.InjectorMake} type="text"/><br/>
-            Injector No : <input value={props.InjectorNo} type="text"/> <br/>
-            Injector Code : <input value={props.InjectorCode} type="text"/><br/>
+            Engine Code : <input defaultValue={props.EngineCode} readOnly type="text"/><br/>
+            Injector Make : <input defaultValue={props.InjectorMake} readOnly type="text"/><br/>
+            Injector No : <input defaultValue={props.InjectorNo} readOnly type="text"/> <br/>
+            Injector Code : <input defaultValue={props.InjectorCode}  readOnly type="text"/><br/>
           </form>
         </div>
     
         <p>New Parts Used:</p>
         <form className='forms'>
         <div className="textbox1">
-          <div><p>{props.NewParts}</p></div></div>
-          <div className="textbox2">  <img className='img' src={props.Image} width='200px' height='100px' alt="" style={{margin:'20px'}}/>
+          <div><p>{props.newPartsDetails}</p></div></div>
+          <div className="textbox2">  <img className='img' src={props.PartImage} width='200px' height='100px' alt="" style={{margin:'20px'}}/>
           </div>
         </form>
     <br/>

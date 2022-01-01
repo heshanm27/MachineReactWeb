@@ -19,20 +19,17 @@ import {
     IconButton,
   } from "@material-ui/core";
   import { useToast } from "@chakra-ui/react";
-  import { purple } from "@material-ui/core/colors";
   import { useEffect, useState } from "react";
   import React, { useRef } from "react";
-  import { Autocomplete, Skeleton } from "@material-ui/lab";
+  import { Skeleton } from "@material-ui/lab";
   import { db } from "../init/firebaseinit";
   import TextField from "@material-ui/core/TextField";
   import SearchIcon from "@material-ui/icons/Search";
   import DeleteIcon from '@material-ui/icons/Delete';
   import {
-    addDoc,
     collection,
     onSnapshot,
     doc,
-    updateDoc,
     deleteDoc
   } from "firebase/firestore";
   import { useNavigate } from "react-router-dom";
@@ -40,10 +37,12 @@ import {
   import PopUp from "../component/PopUp";
   import AddIcon from "@material-ui/icons/Add";
   import EditIcon from '@material-ui/icons/Edit';
-  import EngineForm from "./FormPage/EngineForm";
+
   import Notification from "../component/Notification/Notification";
   import ConfirmDialog from "../component/ConfirmDialog/ConfirmDialog";
-  
+import Pdftemplate from "../component/Pdftemplate";
+import PageviewIcon from '@material-ui/icons/Pageview';
+import { useReactToPrint } from "react-to-print";
   const userStyle = makeStyles((theme) => ({
     roots: {
       minHeight: "100vh",
@@ -94,16 +93,16 @@ import {
   
     secondary: {
       backgroundColor: theme.palette.secondary.light,
-      '& .MuiButton-label': {
-          color: theme.palette.secondary.main,
+      '& .MuiSvgIcon-root': {
+          color: theme.palette.background.paper,
       },
       margin: theme.spacing(0.5)
   },
   primary: {
       backgroundColor: theme.palette.error.light,
-      '& .MuiButton-label': {
-          color: theme.palette.primary.light,
-      }
+      '& .MuiSvgIcon-root': {
+        color: theme.palette.background.paper,
+    },
   },
   }));
   
@@ -128,14 +127,16 @@ import {
         return items;
       },
     });
-  
+    const componentRef = useRef();
     const [recordForEdit,setRecordForEdit]=useState(null)
     const [openPopup, setOpenPopUp] = useState(false);
     const tableHeader = [
-      { id: "Brand", Header: "Brand1" },
-      { id: "id", Header: "Brand2" },
-      { id: "Code", Header: "Brand3" },
-      { id: "action", Header: "Actions", diableSorting: true },
+      { id: "BillNo", Header: "Bill No" },
+      { id: "CustomerName", Header: "Customer Name" },
+      { id: "Technician", Header: "Technician" },
+      { id: "VehicalBrand", Header: "Vehical Brand", diableSorting: true },
+      { id: "WarrentyTill", Header: "Warrenty Till", diableSorting: true },
+      { id: "Actions", Header: "Actions", diableSorting: true },
     ];
   
     const handlePageChange = (event, newPage) => {
@@ -173,14 +174,17 @@ import {
   
     const handleSearch = (e) => {
       let target = e.target.value.toLowerCase();
+   
       setSearchFilter({
         fn: (items) => {
           if (target == "") return items;
-          else return items.filter((x) => x.Brand.toLowerCase().includes(target));
+          else return items.filter((x) =>(x.CustomerName.toLowerCase().includes(target) ||  (x.BillNo.toLowerCase().includes(target))) ) 
+          
         },
       });
     };
   
+    //handle all the sorting and  searching then return data 
     const recordsAfterPagingAndSorting = () => {
       return stableSort(
         searchFilter.fn(EngineData),
@@ -209,65 +213,16 @@ import {
       });
     }
   
-    //handle update popup 
-    const addOrEdit=(values)=>{
-      if(values.id === 0){
-          addDoc(colRef, {
-            Brand: values.Brand,
-            Code: values.Code,
-          })
-            .then(() => {
-              toast({
-                description: "Product Successfully Added",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-              });
-              setOpenPopUp(false)
-            })
-            .catch((e) => {
-              toast({
-                description: "Error Occur",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-              });
-            });
-      }else{
-        const docRef = doc(db, "Engine",values.id);
-        updateDoc(docRef,{
-          Brand:values.Brand,
-          Code:values.Code
-        }).then(()=>{
-    
-          toast({
-            description: "Details Successfully Updated",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
-          setOpenPopUp(false)
-          setRecordForEdit(null)
-    
-        }).catch(()=>{
-          toast({
-            description: "Error Occur",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-        })
-      }
-    }
+  
   
     const updatepopUp=(e,item)=>{
-  
+      console.log(item)
       setRecordForEdit(item)
       setOpenPopUp(true)
     }
   
     const handleDelete=(id)=>{
-      const docRef = doc(db, "Engine",id);
+      const docRef = doc(db, "Warrenty",id);
         setConfirmDialog({
           ...confirmDialog,
           isOpen:false
@@ -287,6 +242,10 @@ import {
       })
     }
   
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
     useEffect(() => {
       getData();
     }, []);
@@ -353,9 +312,11 @@ import {
                     {recordsAfterPagingAndSorting().map((item) => {
                       return (
                         <TableRow key={item.id}>
-                          <TableCell> {item.Brand}</TableCell>
-                          <TableCell> {item.id}</TableCell>
-                          <TableCell> {item.Code}</TableCell>
+                          <TableCell> {item.BillNo}</TableCell>
+                          <TableCell> {item.CustomerName}</TableCell>
+                          <TableCell> {item.Technician}</TableCell>
+                          <TableCell> {item.VehicalBrand}</TableCell>
+                          <TableCell> {item.WarrentyTill}</TableCell>
                           <TableCell>
                           
                             <IconButton
@@ -364,7 +325,7 @@ import {
                               className={classes.secondary}
                               onClick={(e)=>updatepopUp(e,item)}
                             >
-                              <EditIcon />
+                              <PageviewIcon />
                             </IconButton>
                             <IconButton
                             size="small"
@@ -402,6 +363,14 @@ import {
                               {" "}
                               <Skeleton animation="wave" />
                             </TableCell>
+                            <TableCell>
+                              {" "}
+                              <Skeleton animation="wave" />
+                            </TableCell>
+                            <TableCell>
+                              {" "}
+                              <Skeleton animation="wave" />
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -419,12 +388,16 @@ import {
               />
             </Paper>
             <PopUp
-              title="Update Data"
+              title="View Warrenty"
               openPopup={openPopup}
               setOpenPopUp={setOpenPopUp}
             >
-  
-  <EngineForm addOrEdit={addOrEdit} recordForEdit={recordForEdit}/>
+  <div ref={componentRef}>
+  <Pdftemplate props={recordForEdit} />
+  </div>
+  <div style={{display:'flex',justifyContent:'center',marginTop:"40px"}} >
+        <Button variant='contained' color="secondary" onClick={handlePrint} >  Print </Button> 
+        </div>
             </PopUp>
             <Notification notify={notify} setNotify={setNotify}/>
             <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}/>

@@ -117,6 +117,7 @@ const Warrenty = () => {
   const [progress, setProgress] = useState(0);
   const [Url, setUrls] = useState("");
   const [BillNo, setBillNo] = useState("");
+  const [errors,setErrors] =useState([])
   //sendparamters
   const [params, setParams] = useState({});
 
@@ -278,6 +279,30 @@ const Warrenty = () => {
       }
     });
   }
+  //error handle
+  const validate = () => {
+    let temp = {};
+
+    temp.Brand = Brand ? "" : "This Field is Required";
+    temp.Code = Code ? "" : "This Field is Required";
+    temp.adddress =adddress ?  "" : "This Field is Required";
+    temp.contactNo =contactNo ?  "" : "This Field is Required";
+    temp.technician =technician ?  "" : "This Field is Required";
+    temp.technicianContactNo =technicianContactNo ?  "" : "This Field is Required";
+    temp.RegistarationNo =RegistarationNo ?  "" : "This Field is Required";
+    temp.InjectorMake =InjectorMake ?  "" : "This Field is Required";
+    temp.InjectorNo =InjectorNo ?  "" : "This Field is Required";
+    temp.InjectorNo =InjectorNo ?  "" : "This Field is Required";
+    temp.InjectorCode =InjectorCode ?  "" : "This Field is Required";
+    temp.user =user ?  "" : "This Field is Required";
+    console.log(temp);
+    setErrors({
+      ...temp,
+    });
+    //if all the proprties valid to the function that provide in every() it will return true  or if one fail it return false
+    return Object.values(temp).every((x) => x == "");
+  };
+
 
   //date
   const handleDateChange = (dates) => {
@@ -350,9 +375,12 @@ const Warrenty = () => {
     e.preventDefault();
     GenarateBillNo();
     setLoading(true);
-    setUrls([]);
+    setUrls("");
+    console.log(validate())
+    if(validate()){
     const colRef = collection(db, "Warrenty");
     const promises = [];
+   
     images.map((image) => {
       const storageRef = ref(storage, `Productimages/${image.name}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
@@ -377,51 +405,51 @@ const Warrenty = () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             console.log("File available at", downloadURL);
             setUrls(downloadURL.toString());
-            console.log(Url);
+           
+            addDoc(colRef, {
+              CustomerName: user,
+              DateOfRepair: curruntdates,
+              WarrentyTill: expireDate,
+              Address: adddress,
+              ContactNo: contactNo,
+              Technician: technician,
+              VehicalBrand: Brand,
+              TechnicianContactNo: technicianContactNo,
+              RegistartionNo: RegistarationNo,
+              EngineCode: Code,
+              InjectorMake: InjectorMake,
+              InjectorNo: InjectorNo,
+              InjectorCode: InjectorCode,
+              newPartsDetails: newParts,
+              PartImage: downloadURL,
+              BillNo: BillNo,
+            })
+              .then(() => {
+                setLoading(false);
+                setpdfloading(true);
+                toast({
+                  description: "Product Successfully Added",
+                  status: "success",
+                  duration: 5000,
+                  isClosable: true,
+                });
+              })
+              .catch((e) => {
+                toast({
+                  description: "Error Occured When Sumbit ,Please Try Agian",
+                  status: "error",
+                  duration: 5000,
+                  isClosable: true,
+                });
+              });
           });
         }
       );
     });
-
-    Promise.all(promises).then(() => {
-      console.log(Url);
-      addDoc(colRef, {
-        CustomerName: user,
-        DateOfRepair: curruntdates,
-        WarrentyTill: expireDate,
-        Address: adddress,
-        ContactNo: contactNo,
-        Technician: technician,
-        VehicalBrand: Brand,
-        TechnicianContactNo: technicianContactNo,
-        RegistartionNo: RegistarationNo,
-        EngineCode: Code,
-        InjectorMake: InjectorMake,
-        InjectorNo: InjectorNo,
-        InjectorCode: InjectorCode,
-        newPartsDetails: newParts,
-        PartImage: Url,
-        BillNo: BillNo,
-      })
-        .then(() => {
-          setLoading(false);
-          setpdfloading(true);
-          toast({
-            description: "Product Successfully Added",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
-        })
-        .catch((e) => {
-          toast({
-            description: "Error Occured When Sumbit ,Please Try Agian",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-        });
-    });
+  }//if
+  else{
+    setLoading(false)
+  }
   };
 
   return (
@@ -439,6 +467,7 @@ const Warrenty = () => {
               onSubmit={(e) => handleSubmit(e)}
               autoComplete="none"
               id="submitForm"
+              
             >
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={6} className={classes.grid}>
@@ -457,7 +486,8 @@ const Warrenty = () => {
                         {...params}
                         label="Customer Name"
                         variant="outlined"
-                        required
+                        error={errors.user ? true:false}
+                        helperText={errors.user}
                       />
                     )}
                   />
@@ -465,19 +495,22 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                   
                     fullWidth
                     id="address"
                     label="Address"
                     name="address"
                     onChange={(e) => setAddress(e.target.value)}
                     value={adddress}
+                    error={errors.adddress ? true:false}
+                    helperText={errors.adddress}
                   />
                   {/*ContactNo*/}
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                    error={errors.contactNo ? true:false}
+                    helperText={errors.contactNo}
                     fullWidth
                     id="ContactNo"
                     label="Contact No"
@@ -499,6 +532,8 @@ const Warrenty = () => {
                         {...params}
                         label="Vehical Brand"
                         variant="outlined"
+                        error={errors.Brand ? true:false}
+                    helperText={errors.Brand}
                       />
                     )}
                   />
@@ -506,7 +541,8 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                    error={errors.RegistarationNo ? true:false}
+                    helperText={errors.RegistarationNo}
                     fullWidth
                     id="RegistrationNo"
                     label="Registration No"
@@ -553,7 +589,8 @@ const Warrenty = () => {
                     <TextField
                       variant="outlined"
                       margin="normal"
-                      required
+                      error={errors.technician ? true:false}
+                    helperText={errors.technician}
                       fullWidth
                       id="Technician"
                       label="Technician"
@@ -567,7 +604,8 @@ const Warrenty = () => {
                     <TextField
                       variant="outlined"
                       margin="normal"
-                      required
+                      error={errors.technicianContactNo ? true:false}
+                    helperText={errors.technicianContactNo}
                       fullWidth
                       id="Technician Contact No"
                       label="Technician ContactNo"
@@ -599,6 +637,8 @@ const Warrenty = () => {
                         {...params}
                         label="Engine Code"
                         variant="outlined"
+                        error={errors.Code ? true:false}
+                    helperText={errors.Code}
                       />
                     )}
                   />
@@ -607,7 +647,8 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                    error={errors.InjectorMake ? true:false}
+                    helperText={errors.InjectorMake}
                     fullWidth
                     id="InjectorMake"
                     label="Injector Make"
@@ -621,7 +662,8 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                    error={errors.InjectorNo ? true:false}
+                    helperText={errors.InjectorNo}
                     fullWidth
                     id="InjectorNo"
                     label="Injector No"
@@ -634,7 +676,8 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                    error={errors.InjectorCode ? true:false}
+                    helperText={errors.InjectorCode}
                     fullWidth
                     id="InjectorCode"
                     label="Injector Code"
@@ -648,7 +691,7 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    required
+                 
                     fullWidth
                     id="NewPartsDetails"
                     label="New Parts Details"
@@ -711,21 +754,21 @@ const Warrenty = () => {
                     onClick={() => {
                       navigate("/pdf", {
                         state: {
-                          Brand: Brand,
+                          VehicalBrand: Brand,
                           EngineCode: Code,
                           Address: adddress,
                           CustomerName: user,
-                          dateRepair: curruntdates,
+                          DateOfRepair: curruntdates,
                           WarrentyTill: expireDate,
                           Technician: technician,
                           TechnicianContactNo: technicianContactNo,
-                          RegistarationNo: RegistarationNo,
+                          RegistartionNo: RegistarationNo,
                           InjectorMake: InjectorMake,
                           InjectorNo: InjectorNo,
                           InjectorCode: InjectorCode,
-                          NewParts: newParts,
-                          Image: Url,
-                          contactNo: contactNo,
+                          newPartsDetails: newParts,
+                          PartImage: Url,
+                          ContactNo: contactNo,
                           BillNo: BillNo,
                         },
                       });

@@ -35,7 +35,7 @@ const useStyle = makeStyles((theme)=>({
 const Pdf = () => {  
  const location =useLocation()
  const obj=location.state
- console.log(location.state)
+ 
     const classes =useStyle()
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -47,8 +47,10 @@ const Pdf = () => {
     <Container component="main" maxWidth="md" color='red' >
       <CssBaseline />
    
-    <Paper className={classes.container}  ref={componentRef} >
+    <Paper className={classes.container}   >
+    <div ref={componentRef}>
    <Pdftemplate props={obj} />
+   </div>
         </Paper>
         <div style={{display:'flex',justifyContent:'center'}} className={classes.roots}>
         <Button variant='contained' color="secondary" onClick={handlePrint} >  Print </Button> 
