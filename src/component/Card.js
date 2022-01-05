@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { useEffect, useState } from "react";
-import img from "../img/bg.jpg";
+import img from "../img/bg.svg";
 import { db } from "../init/firebaseinit";
 import {  onSnapshot, collection } from "firebase/firestore";
 import Skeleton from '@material-ui/lab/Skeleton';

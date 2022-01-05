@@ -128,7 +128,7 @@ export default function Login() {
 
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="sm" color='purple'>
     <Paper className={classes.paper}>
       <CssBaseline />
       <div className={classes.paper}>

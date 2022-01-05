@@ -9,7 +9,7 @@ import {
   Typography,CardActions,Button,Box, Divider
 
 } from "@material-ui/core";
-import img from "../../img/bg.jpg";
+
 
 
 import LearMore from "./LearnMore";
@@ -18,28 +18,34 @@ import FooterPage from "./Footer";
 import Brand from "./Brand";
 import ContactUs from "./Contactus";
 import Header from "../../component/Header";
+import wave from "../../img/wave.svg"
 const userStyle = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
-    background:`url(${img})`,
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
+ 
+  
   },
+  divider:{
+      backgroundColor:theme.palette.background.paper
+  }
 }));
 
-const Home = () => {
+const Home = (props) => {
+  const {darkmode,setDarkMode} = props 
   const classes = userStyle();
   return (
   
     <>
     
-     <Header/>
+     <Header darkmode={darkmode} setDarkMode={setDarkMode}/>
        <Landing/>
-      <Divider variant="middle"/>
+      
+
+      <Divider variant="middle" light={true}  />
       <LearMore/>
-      <Divider variant="middle"/>
+      <Divider variant="middle" light={true}/>
       <Brand/>
-      <Divider variant="middle"/>
+      <Divider variant="middle" light={true}/>
       <ContactUs/>
       <FooterPage/> 
     </>

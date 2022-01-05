@@ -1,7 +1,20 @@
 import React, { useState } from "react";
 import { useStyles } from "./DrawerStyle";
 import Drawer from "@material-ui/core/Drawer";
-import { AppBar, Container, CssBaseline, IconButton, List, Toolbar, Typography, useMediaQuery, useTheme } from "@material-ui/core";
+import {
+  AppBar,
+  Container,
+  CssBaseline,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import NavListitem from "./NavListitem";
 import Dashroutes from "./DashbordRoute";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
@@ -12,48 +25,45 @@ import Logo1 from "../../img/logo512.png";
 import Logo2 from "../../img/logo192.png";
 import clsx from "clsx";
 import { Outlet, useNavigate } from "react-router";
+import { ListIcon } from "@chakra-ui/react";
+import Brightness7Icon from "@material-ui/icons/Brightness7";
+import NightsStayIcon from "@material-ui/icons/NightsStay";
 
-
-
-function DashBordDarwer() {
-    const theme = useTheme()
+function DashBordDarwer({ darkmode, setDarkMode }) {
+  const theme = useTheme();
+  const reslution = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-    const reslution = useMediaQuery(theme.breakpoints.down('sm'))
-  const  navigate = useNavigate();
+
+  const navigate = useNavigate();
   const toggelNavigation = () => {
     setOpen(!open);
   };
 
-  const closeNavigation =()=>{
-      if(reslution){
-        setOpen(false)
-      }
-       
-  }
+  const closeNavigation = () => {
+    setOpen(false);
+  };
   return (
     <div className={classes.root}>
-
-  { reslution && <AppBar>
-        <Toolbar>
+      {reslution && (
+        <AppBar>
+          <Toolbar>
             <IconButton onClick={toggelNavigation} color="inherit">
-                <MenuIcon/>
+              <MenuIcon />
             </IconButton>
-            <Typography>
-                RosCard.com
-            </Typography>
-        </Toolbar>
-    </AppBar>}
-        <CssBaseline />
+            <Typography>RosCard.com</Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+      <CssBaseline />
       <Drawer
-        variant={reslution ?"temporary":"permanent"}
+        variant={reslution ? "temporary" : "permanent"}
         open={open}
         classes={{
           paper: clsx(
             classes.navigationDrawer,
             !open && classes.navigationDawercollapse
           ),
-          
         }}
         anchor="left"
       >
@@ -76,6 +86,7 @@ function DashBordDarwer() {
             src={open ? Logo1 : Logo2}
             alt="logo"
             className={classes.navgivationLogo}
+            loading="lazy"
           />
         </div>
         <List className={classes.navigationList}>
@@ -91,18 +102,33 @@ function DashBordDarwer() {
               />
             );
           })}
+          <ListItem
+            button
+            label="darkMode"
+            key={6}
+            className={classes.menuitem}
+            onClick={() => setDarkMode(!darkmode)}
+          >
+            <ListItemIcon>
+              {darkmode ? <NightsStayIcon /> : <Brightness7Icon />}
+            </ListItemIcon>
+            <ListItemText
+              primary="DarkMode"
+              primaryTypographyProps={{ varient: "body2" }}
+            />
+          </ListItem>
           <div className={classes.navigationSpacer}></div>
           <NavListitem
             label="Log Out"
             activeIcon={<MeetingRoomIcon />}
             icon={<MeetingRoomOutlinedIcon />}
-            path='logout'
+            path="logout"
           />
         </List>
       </Drawer>
       <div className={classes.page}>
-      <div className={classes.toolbar}></div>
-      <Outlet  />
+        <div className={classes.toolbar}></div>
+        <Outlet />
       </div>
     </div>
   );

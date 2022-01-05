@@ -1,4 +1,3 @@
-
 import Home from "../Pages/Home/Home";
 import { Route, Routes } from "react-router-dom";
 
@@ -17,6 +16,10 @@ import DashBordDarwer from "../component/Drawer/DrawerDashbord";
 import Additem from "../Pages/Additem";
 import Dashbord from "../Pages/Dashbord";
 import { useStyles } from "../component/Drawer/DrawerStyle";
+import { useState } from "react";
+import Setting from "../Pages/Setting";
+import Graph from "../Pages/Graph";
+import { useAuth } from "../Context/AuthContext";
 
 const theme = createTheme({
   palette: {
@@ -32,38 +35,58 @@ const theme = createTheme({
     fontWeightRegular: 500,
     fontWeightMedium: 600,
     fontWeightBold: 700,
-  },root:{
+  },
+  root: {},
+});
 
-  }
+const themeDark = createTheme({
+  palette: {
+    type: "dark",
+  },
+  typography: {
+    fontFamily: "Quicksand",
+    fontWeightLight: 400,
+    fontWeightRegular: 500,
+    fontWeightMedium: 600,
+    fontWeightBold: 700,
+  },
 });
 
 function App() {
   const classes = useStyles();
+  const [darkmode, setDarkMode] = useState(false);
+  const { currentUser } = useAuth();
+
   return (
-  
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={darkmode ? themeDark : theme}>
       <ChakraProvider>
-     
-      
         <Routes>
-          <Route exact path="/" element={<Home />} />
-         
+          <Route
+            exact
+            path="/"
+            element={<Home darkmode={darkmode} setDarkMode={setDarkMode} />}
+          />
+
           <Route path="/login" element={<Login />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
-        
-          <Route  element={<DashBordDarwer />}>
-          <Route path="/dashbord" element={<Dashbord />} />
+
+          <Route
+            element={
+              <DashBordDarwer darkmode={darkmode} setDarkMode={setDarkMode} />
+            }
+          >
+            <Route path="/dashbord" element={<Dashbord />} />
             <Route path="/warrenty" element={<Warrenty />} />
             <Route path="/additem" element={<Additem />} />
+            <Route path="/Setting" element={<Setting />} />
             <Route path="/pdf" element={<Pdf />} />
+            <Route path="/graph" element={<Graph />} />
           </Route>
-          
+
           <Route path="*" element={<NotFound />} />
         </Routes>
-      
       </ChakraProvider>
     </ThemeProvider>
-    
   );
 }
 

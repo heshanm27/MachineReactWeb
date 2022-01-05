@@ -14,7 +14,7 @@ import {
     Typography,
   } from "@material-ui/core";
   import { useEffect, useState } from "react";
-  import img from "../img/bg.jpg";
+
   import { db } from "../init/firebaseinit";
   import {  onSnapshot, collection } from "firebase/firestore";
 import Slider from "react-slick";

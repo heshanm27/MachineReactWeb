@@ -7,11 +7,13 @@ import {BrowserRouter} from 'react-router-dom'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import AuthContextProvider from './Context/AuthContext';
+import { CssBaseline } from '@material-ui/core';
 
 ReactDOM.render(
  
      <AuthContextProvider>
   <BrowserRouter>
+    <CssBaseline/>
     <App />
     </BrowserRouter>
     </AuthContextProvider>

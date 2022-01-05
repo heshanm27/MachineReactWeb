@@ -117,7 +117,7 @@ const Warrenty = () => {
   const [progress, setProgress] = useState(0);
   const [Url, setUrls] = useState("");
   const [BillNo, setBillNo] = useState("");
-  const [errors,setErrors] =useState([])
+  const [errors, setErrors] = useState([]);
   //sendparamters
   const [params, setParams] = useState({});
 
@@ -285,16 +285,18 @@ const Warrenty = () => {
 
     temp.Brand = Brand ? "" : "This Field is Required";
     temp.Code = Code ? "" : "This Field is Required";
-    temp.adddress =adddress ?  "" : "This Field is Required";
-    temp.contactNo =contactNo ?  "" : "This Field is Required";
-    temp.technician =technician ?  "" : "This Field is Required";
-    temp.technicianContactNo =technicianContactNo ?  "" : "This Field is Required";
-    temp.RegistarationNo =RegistarationNo ?  "" : "This Field is Required";
-    temp.InjectorMake =InjectorMake ?  "" : "This Field is Required";
-    temp.InjectorNo =InjectorNo ?  "" : "This Field is Required";
-    temp.InjectorNo =InjectorNo ?  "" : "This Field is Required";
-    temp.InjectorCode =InjectorCode ?  "" : "This Field is Required";
-    temp.user =user ?  "" : "This Field is Required";
+    temp.adddress = adddress ? "" : "This Field is Required";
+    temp.contactNo = contactNo ? "" : "This Field is Required";
+    temp.technician = technician ? "" : "This Field is Required";
+    temp.technicianContactNo = technicianContactNo
+      ? ""
+      : "This Field is Required";
+    temp.RegistarationNo = RegistarationNo ? "" : "This Field is Required";
+    temp.InjectorMake = InjectorMake ? "" : "This Field is Required";
+    temp.InjectorNo = InjectorNo ? "" : "This Field is Required";
+    temp.InjectorNo = InjectorNo ? "" : "This Field is Required";
+    temp.InjectorCode = InjectorCode ? "" : "This Field is Required";
+    temp.user = user ? "" : "This Field is Required";
     console.log(temp);
     setErrors({
       ...temp,
@@ -302,7 +304,6 @@ const Warrenty = () => {
     //if all the proprties valid to the function that provide in every() it will return true  or if one fail it return false
     return Object.values(temp).every((x) => x == "");
   };
-
 
   //date
   const handleDateChange = (dates) => {
@@ -376,80 +377,80 @@ const Warrenty = () => {
     GenarateBillNo();
     setLoading(true);
     setUrls("");
-    console.log(validate())
-    if(validate()){
-    const colRef = collection(db, "Warrenty");
-    const promises = [];
-   
-    images.map((image) => {
-      const storageRef = ref(storage, `Productimages/${image.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, image);
-      promises.push(uploadTask);
+    console.log(validate());
+    if (validate()) {
+      const colRef = collection(db, "Warrenty");
+      const promises = [];
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const prog = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setProgress(prog);
-        },
-        (e) =>
-          toast({
-            description: e.message,
-            status: "error",
-            duration: 9000,
-            isClosable: true,
-          }),
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            console.log("File available at", downloadURL);
-            setUrls(downloadURL.toString());
-           
-            addDoc(colRef, {
-              CustomerName: user,
-              DateOfRepair: curruntdates,
-              WarrentyTill: expireDate,
-              Address: adddress,
-              ContactNo: contactNo,
-              Technician: technician,
-              VehicalBrand: Brand,
-              TechnicianContactNo: technicianContactNo,
-              RegistartionNo: RegistarationNo,
-              EngineCode: Code,
-              InjectorMake: InjectorMake,
-              InjectorNo: InjectorNo,
-              InjectorCode: InjectorCode,
-              newPartsDetails: newParts,
-              PartImage: downloadURL,
-              BillNo: BillNo,
-            })
-              .then(() => {
-                setLoading(false);
-                setpdfloading(true);
-                toast({
-                  description: "Product Successfully Added",
-                  status: "success",
-                  duration: 5000,
-                  isClosable: true,
-                });
+      images.map((image) => {
+        const storageRef = ref(storage, `Productimages/${image.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+        promises.push(uploadTask);
+
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const prog = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setProgress(prog);
+          },
+          (e) =>
+            toast({
+              description: e.message,
+              status: "error",
+              duration: 9000,
+              isClosable: true,
+            }),
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              console.log("File available at", downloadURL);
+              setUrls(downloadURL.toString());
+
+              addDoc(colRef, {
+                CustomerName: user,
+                DateOfRepair: curruntdates,
+                WarrentyTill: expireDate,
+                Address: adddress,
+                ContactNo: contactNo,
+                Technician: technician,
+                VehicalBrand: Brand,
+                TechnicianContactNo: technicianContactNo,
+                RegistartionNo: RegistarationNo,
+                EngineCode: Code,
+                InjectorMake: InjectorMake,
+                InjectorNo: InjectorNo,
+                InjectorCode: InjectorCode,
+                newPartsDetails: newParts,
+                PartImage: downloadURL,
+                BillNo: BillNo,
               })
-              .catch((e) => {
-                toast({
-                  description: "Error Occured When Sumbit ,Please Try Agian",
-                  status: "error",
-                  duration: 5000,
-                  isClosable: true,
+                .then(() => {
+                  setLoading(false);
+                  setpdfloading(true);
+                  toast({
+                    description: "Product Successfully Added",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                  });
+                })
+                .catch((e) => {
+                  toast({
+                    description: "Error Occured When Sumbit ,Please Try Agian",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                  });
                 });
-              });
-          });
-        }
-      );
-    });
-  }//if
-  else{
-    setLoading(false)
-  }
+            });
+          }
+        );
+      });
+    } //if
+    else {
+      setLoading(false);
+    }
   };
 
   return (
@@ -457,7 +458,7 @@ const Warrenty = () => {
       <Container component="main" maxWidth="md">
         <CssBaseline />
         <div className={classes.paper}>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" color="textPrimary">
             Warrenty
           </Typography>
           <Paper className={classes.paper}>
@@ -467,7 +468,6 @@ const Warrenty = () => {
               onSubmit={(e) => handleSubmit(e)}
               autoComplete="none"
               id="submitForm"
-              
             >
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={6} className={classes.grid}>
@@ -486,7 +486,7 @@ const Warrenty = () => {
                         {...params}
                         label="Customer Name"
                         variant="outlined"
-                        error={errors.user ? true:false}
+                        error={errors.user ? true : false}
                         helperText={errors.user}
                       />
                     )}
@@ -495,21 +495,20 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                   
                     fullWidth
                     id="address"
                     label="Address"
                     name="address"
                     onChange={(e) => setAddress(e.target.value)}
                     value={adddress}
-                    error={errors.adddress ? true:false}
+                    error={errors.adddress ? true : false}
                     helperText={errors.adddress}
                   />
                   {/*ContactNo*/}
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    error={errors.contactNo ? true:false}
+                    error={errors.contactNo ? true : false}
                     helperText={errors.contactNo}
                     fullWidth
                     id="ContactNo"
@@ -532,8 +531,8 @@ const Warrenty = () => {
                         {...params}
                         label="Vehical Brand"
                         variant="outlined"
-                        error={errors.Brand ? true:false}
-                    helperText={errors.Brand}
+                        error={errors.Brand ? true : false}
+                        helperText={errors.Brand}
                       />
                     )}
                   />
@@ -541,7 +540,7 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    error={errors.RegistarationNo ? true:false}
+                    error={errors.RegistarationNo ? true : false}
                     helperText={errors.RegistarationNo}
                     fullWidth
                     id="RegistrationNo"
@@ -589,8 +588,8 @@ const Warrenty = () => {
                     <TextField
                       variant="outlined"
                       margin="normal"
-                      error={errors.technician ? true:false}
-                    helperText={errors.technician}
+                      error={errors.technician ? true : false}
+                      helperText={errors.technician}
                       fullWidth
                       id="Technician"
                       label="Technician"
@@ -604,8 +603,8 @@ const Warrenty = () => {
                     <TextField
                       variant="outlined"
                       margin="normal"
-                      error={errors.technicianContactNo ? true:false}
-                    helperText={errors.technicianContactNo}
+                      error={errors.technicianContactNo ? true : false}
+                      helperText={errors.technicianContactNo}
                       fullWidth
                       id="Technician Contact No"
                       label="Technician ContactNo"
@@ -637,8 +636,8 @@ const Warrenty = () => {
                         {...params}
                         label="Engine Code"
                         variant="outlined"
-                        error={errors.Code ? true:false}
-                    helperText={errors.Code}
+                        error={errors.Code ? true : false}
+                        helperText={errors.Code}
                       />
                     )}
                   />
@@ -647,7 +646,7 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    error={errors.InjectorMake ? true:false}
+                    error={errors.InjectorMake ? true : false}
                     helperText={errors.InjectorMake}
                     fullWidth
                     id="InjectorMake"
@@ -662,7 +661,7 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    error={errors.InjectorNo ? true:false}
+                    error={errors.InjectorNo ? true : false}
                     helperText={errors.InjectorNo}
                     fullWidth
                     id="InjectorNo"
@@ -676,7 +675,7 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    error={errors.InjectorCode ? true:false}
+                    error={errors.InjectorCode ? true : false}
                     helperText={errors.InjectorCode}
                     fullWidth
                     id="InjectorCode"
@@ -691,7 +690,6 @@ const Warrenty = () => {
                   <TextField
                     variant="outlined"
                     margin="normal"
-                 
                     fullWidth
                     id="NewPartsDetails"
                     label="New Parts Details"

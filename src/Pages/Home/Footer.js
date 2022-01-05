@@ -16,8 +16,6 @@ import Map from "../../component/Map";
 const userStyle = makeStyles((theme) => ({
   roots: {
     minHeight: "50vh",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
     justifyContent: "center",
     alignContent: "center",
     display: "flex",
@@ -71,14 +69,12 @@ const FooterPage = () => {
             </Grid>
 
             <Grid item xs={12} sm={4}>
-              <Box borderBottom={1} pb={{ xs: 1, sm: 2 }}>
+              <Box borderBottom={1} pb={{ xs: 1, sm: 2 }} marginBottom={2}>
                 <Typography>Location</Typography>
              
               </Box>
               <Map/>
-              <Box pt={{ xs: 2, sm: 3 }}>
-                <Input type="email"></Input>
-              </Box>
+          
             </Grid>
 
             {/* Scocial media*/}

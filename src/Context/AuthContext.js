@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { auth ,storage} from '../init/firebaseinit'
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { auth, storage } from "../init/firebaseinit";
 
 import {
   createUserWithEmailAndPassword,
@@ -8,56 +8,56 @@ import {
   onAuthStateChanged,
   signOut,
   confirmPasswordReset,
-} from 'firebase/auth'
-
-
+} from "firebase/auth";
 
 const AuthContext = createContext({
   currentUser: null,
   register: () => Promise,
-  login:()=>Promise,
-  logout:()=>Promise,
-  ForgotPassword:()=>Promise
-})
+  login: () => Promise,
+  logout: () => Promise,
+  ForgotPassword: () => Promise,
+});
 
-export const useAuth = () => useContext(AuthContext)
+export const useAuth = () => useContext(AuthContext);
 
 export default function AuthContextProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null);
 
+  useEffect(() => {
+    const unscubcribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      localStorage.setItem("currentUser", JSON.stringify(user));
+    });
 
-  useEffect(()=>{
-      const unscubcribe = onAuthStateChanged(auth,user=>{
-          setCurrentUser(user)
-      })
-
-      return ()=>{
-          unscubcribe()
-      }
-  },[])
+    return () => {
+      unscubcribe();
+    };
+  }, []);
   function register(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password)
+    return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  function login(email,password){
-      return signInWithEmailAndPassword(auth,email,password)
+  function login(email, password) {
+    return signInWithEmailAndPassword(auth, email, password);
   }
-  function logout(){
-      return signOut(auth)
-  }
-
-  function ForgotPassword(email){
-      return sendPasswordResetEmail(auth,email,{url:'http://localhost:3000/login'})
+  function logout() {
+    localStorage.removeItem("currentUser");
+    return signOut(auth);
   }
 
-
-  const value ={
-      currentUser,
-      register,
-      login,
-      logout,
-      ForgotPassword
+  function ForgotPassword(email) {
+    return sendPasswordResetEmail(auth, email, {
+      url: "http://localhost:3000/login",
+    });
   }
- 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+
+  const value = {
+    currentUser,
+    register,
+    login,
+    logout,
+    ForgotPassword,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

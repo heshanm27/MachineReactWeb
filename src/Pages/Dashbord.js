@@ -26,20 +26,20 @@ import { Autocomplete, Skeleton } from "@material-ui/lab";
 import { db } from "../init/firebaseinit";
 import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 import {
   addDoc,
   collection,
   onSnapshot,
   doc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import TableContainer from "@material-ui/core/TableContainer";
 import PopUp from "../component/PopUp";
 import AddIcon from "@material-ui/icons/Add";
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from "@material-ui/icons/Edit";
 import EngineForm from "./FormPage/EngineForm";
 import Notification from "../component/Notification/Notification";
 import ConfirmDialog from "../component/ConfirmDialog/ConfirmDialog";
@@ -72,7 +72,7 @@ const userStyle = makeStyles((theme) => ({
       fontWeight: "400",
     },
     "& tbody tr:hover": {
-      backgroundColor:theme.palette.grey[100],
+      backgroundColor: theme.palette.secondary.main,
       cursor: "pointer",
     },
   },
@@ -94,17 +94,17 @@ const userStyle = makeStyles((theme) => ({
 
   secondary: {
     backgroundColor: theme.palette.secondary.light,
-    '& .MuiButton-label': {
-        color: theme.palette.secondary.main,
+    "& .MuiButton-label": {
+      color: theme.palette.secondary.main,
     },
-    margin: theme.spacing(0.5)
-},
-primary: {
+    margin: theme.spacing(0.5),
+  },
+  primary: {
     backgroundColor: theme.palette.error.light,
-    '& .MuiButton-label': {
-        color: theme.palette.primary.light,
-    }
-},
+    "& .MuiButton-label": {
+      color: theme.palette.primary.light,
+    },
+  },
 }));
 
 const Dashbord = () => {
@@ -121,15 +121,23 @@ const Dashbord = () => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("Brand");
   const colRef = collection(db, "Engine");
-  const [notify,setNotify]=useState({isOpen:false,message:'',type:''})
-  const [confirmDialog,setConfirmDialog]=useState({isOpen:false,title:'',subtitle:''})
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subtitle: "",
+  });
   const [searchFilter, setSearchFilter] = useState({
     fn: (items) => {
       return items;
     },
   });
 
-  const [recordForEdit,setRecordForEdit]=useState(null)
+  const [recordForEdit, setRecordForEdit] = useState(null);
   const [openPopup, setOpenPopUp] = useState(false);
   const tableHeader = [
     { id: "Brand", Header: "Brand1" },
@@ -209,83 +217,84 @@ const Dashbord = () => {
     });
   }
 
-  //handle update popup 
-  const addOrEdit=(values)=>{
-    if(values.id === 0){
-        addDoc(colRef, {
-          Brand: values.Brand,
-          Code: values.Code,
-        })
-          .then(() => {
-            toast({
-              description: "Product Successfully Added",
-              status: "success",
-              duration: 5000,
-              isClosable: true,
-            });
-            setOpenPopUp(false)
-          })
-          .catch((e) => {
-            toast({
-              description: "Error Occur",
-              status: "error",
-              duration: 5000,
-              isClosable: true,
-            });
+  //handle update popup
+  const addOrEdit = (values) => {
+    if (values.id === 0) {
+      addDoc(colRef, {
+        Brand: values.Brand,
+        Code: values.Code,
+      })
+        .then(() => {
+          toast({
+            description: "Product Successfully Added",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
           });
-    }else{
-      const docRef = doc(db, "Engine",values.id);
-      updateDoc(docRef,{
-        Brand:values.Brand,
-        Code:values.Code
-      }).then(()=>{
-  
-        toast({
-          description: "Details Successfully Updated",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
+          setOpenPopUp(false);
+        })
+        .catch((e) => {
+          toast({
+            description: "Error Occur",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         });
-        setOpenPopUp(false)
-        setRecordForEdit(null)
-  
-      }).catch(()=>{
-        toast({
-          description: "Error Occur",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+    } else {
+      const docRef = doc(db, "Engine", values.id);
+      updateDoc(docRef, {
+        Brand: values.Brand,
+        Code: values.Code,
       })
+        .then(() => {
+          toast({
+            description: "Details Successfully Updated",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          setOpenPopUp(false);
+          setRecordForEdit(null);
+        })
+        .catch(() => {
+          toast({
+            description: "Error Occur",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        });
     }
-  }
+  };
 
-  const updatepopUp=(e,item)=>{
+  const updatepopUp = (e, item) => {
+    setRecordForEdit(item);
+    setOpenPopUp(true);
+  };
 
-    setRecordForEdit(item)
-    setOpenPopUp(true)
-  }
-
-  const handleDelete=(id)=>{
-    const docRef = doc(db, "Engine",id);
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen:false
+  const handleDelete = (id) => {
+    const docRef = doc(db, "Engine", id);
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    deleteDoc(docRef)
+      .then(() => {
+        setNotify({
+          isOpen: true,
+          message: "Successfully Deleted",
+          type: "success",
+        });
       })
-    deleteDoc(docRef).then(()=>{
-      setNotify({
-        isOpen:true,
-        message:'Successfully Deleted',
-        type:'success'
-      })
-    }).catch((e)=>{
-      setNotify({
-        isOpen:true,
-        message:'Error Occurd',
-        type:'error'
-      })
-    })
-  }
+      .catch((e) => {
+        setNotify({
+          isOpen: true,
+          message: "Error Occurd",
+          type: "error",
+        });
+      });
+  };
 
   useEffect(() => {
     getData();
@@ -296,7 +305,7 @@ const Dashbord = () => {
       <Container component="main" maxWidth="lg" className={classes.main}>
         <CssBaseline />
         <div className={classes.paper}>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" color="textPrimary">
             DashBord
           </Typography>
           <Paper className={classes.paper}>
@@ -357,28 +366,26 @@ const Dashbord = () => {
                         <TableCell> {item.id}</TableCell>
                         <TableCell> {item.Code}</TableCell>
                         <TableCell>
-                        
                           <IconButton
-                           size="small"
+                            size="small"
                             aria-label="edit"
                             className={classes.secondary}
-                            onClick={(e)=>updatepopUp(e,item)}
+                            onClick={(e) => updatepopUp(e, item)}
                           >
                             <EditIcon />
                           </IconButton>
                           <IconButton
-                          size="small"
-                                 className={classes.primary}
+                            size="small"
+                            className={classes.primary}
                             aria-label="delete"
-                            onClick={()=>{
+                            onClick={() => {
                               setConfirmDialog({
-                                isOpen:true,
-                                title:'Are you sure to delete this record?',
-                                subTitle:"You can't undo this operation",
-                                onConfirm:()=>handleDelete(item.id)
-                              })
-                             
-                              }}
+                                isOpen: true,
+                                title: "Are you sure to delete this record?",
+                                subTitle: "You can't undo this operation",
+                                onConfirm: () => handleDelete(item.id),
+                              });
+                            }}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -423,11 +430,13 @@ const Dashbord = () => {
             openPopup={openPopup}
             setOpenPopUp={setOpenPopUp}
           >
-
-<EngineForm addOrEdit={addOrEdit} recordForEdit={recordForEdit}/>
+            <EngineForm addOrEdit={addOrEdit} recordForEdit={recordForEdit} />
           </PopUp>
-          <Notification notify={notify} setNotify={setNotify}/>
-          <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog}/>
+          <Notification notify={notify} setNotify={setNotify} />
+          <ConfirmDialog
+            confirmDialog={confirmDialog}
+            setConfirmDialog={setConfirmDialog}
+          />
         </div>
       </Container>
     </div>
