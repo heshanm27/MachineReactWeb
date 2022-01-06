@@ -44,7 +44,14 @@ import { useAuth } from "../Context/AuthContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Form } from "../component/Form/useFrom";
-import { getAuth, updateProfile } from "firebase/auth";
+import {
+  EmailAuthProvider,
+  getAuth,
+  reauthenticateWithCredential,
+  signInWithEmailAndPassword,
+  updatePassword,
+  updateProfile,
+} from "firebase/auth";
 import Notification from "../component/Notification/Notification";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
@@ -113,6 +120,8 @@ const Setting = () => {
   const classes = userStyle();
   //const { currentUser } = useAuth();
   const auth = getAuth();
+
+  const user = auth.currentUser;
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const [photoUrl, setPhotoUrl] = useState("");
   const [userName, setUserName] = useState(currentUser.displayName);
@@ -128,6 +137,7 @@ const Setting = () => {
   const [diablebtn, setDisableBtn] = useState(true);
   const [error, setError] = useState(false);
   const [confirmpwerror, setConfirmPwError] = useState(false);
+  const [curruntPassword, setCurruntPassword] = useState("");
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -237,13 +247,42 @@ const Setting = () => {
     }
   };
 
-  const updatePassword = (e) => {
+  const handleUpdatePassword = (e) => {
     e.preventDefault();
-    if (password === " " || password.length <= 6) {
-      console.log("error");
-    } else {
-      console.log("updated password");
-    }
+    reauthenticateWithCredential(
+      user,
+      EmailAuthProvider.credential(user.email, curruntPassword)
+    )
+      .then(() => {
+        console.log("after authprovider");
+        updatePassword(user, password)
+          .then(() => {
+            setPassword("");
+            setConfirmPassword("");
+            setCurruntPassword("");
+            setNotify({
+              isOpen: true,
+              message: "Successfully Updated",
+              type: "success",
+            });
+          })
+          .catch((e) => {
+            console.log(e);
+            setNotify({
+              isOpen: true,
+              message: e.message,
+              type: "error",
+            });
+          });
+      })
+      .catch((error) => {
+        console.log(error.message);
+        setNotify({
+          isOpen: true,
+          message: "Currunt PassWord Invalid",
+          type: "error",
+        });
+      });
   };
   useEffect(() => {
     console.log("curruntuser", currentUser);
@@ -361,24 +400,65 @@ const Setting = () => {
                     <form
                       autocomplete="off"
                       style={{ width: "100%" }}
-                      onSubmit={updatePassword}
+                      onSubmit={handleUpdatePassword}
                     >
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={12} md={6}>
+                        <Grid item xs={12}>
                           <FormControl
                             color="secondary"
                             variant="outlined"
-                            className={classes.textField}
+                            style={{ width: "50%", marginLeft: "-50%" }}
                           >
-                            <InputLabel htmlFor="password">Password</InputLabel>
+                            <InputLabel htmlFor="password">
+                              Currunt Password
+                            </InputLabel>
                             <OutlinedInput
                               fullWidth
                               required
                               name="password"
                               type={showPassword ? "text" : "password"}
                               id="password"
-                              value={password}
+                              value={curruntPassword}
                               autoComplete="current-password"
+                              onChange={(e) =>
+                                setCurruntPassword(e.target.value)
+                              }
+                              color="secondary"
+                              endAdornment={
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleShowPassword}
+                                  >
+                                    {showPassword ? (
+                                      <Visibility />
+                                    ) : (
+                                      <VisibilityOff />
+                                    )}
+                                  </IconButton>
+                                </InputAdornment>
+                              }
+                              labelWidth={70}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6}>
+                          <FormControl
+                            color="secondary"
+                            variant="outlined"
+                            className={classes.textField}
+                          >
+                            <InputLabel htmlFor="password">
+                              New Password
+                            </InputLabel>
+                            <OutlinedInput
+                              fullWidth
+                              required
+                              name="New password"
+                              type={showPassword ? "text" : "password"}
+                              id="New password"
+                              value={password}
+                              autoComplete="New password"
                               onChange={handlePassword}
                               color="secondary"
                               endAdornment={

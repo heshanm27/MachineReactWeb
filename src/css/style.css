@@ -3,16 +3,13 @@ textarea {
   width: 130mm;
   height: 6.5rem;
   margin-left: 1.5rem;
-  
 }
 
 input {
   border: 0;
- 
 }
-input[type="text"]
-{
-    font-size:16px;
+input[type="text"] {
+  font-size: 16px;
 }
 
 .bold-text {
@@ -36,7 +33,6 @@ input[type="text"]
   width: 210mm;
   height: 290mm;
   font-size: 15px;
-  
 }
 
 .main-title {
@@ -54,9 +50,11 @@ input[type="text"]
   padding: 1% 2%;
   border: 2px solid;
 }
-.bottomArea{  margin: 1rem 1rem;
+.bottomArea {
+  margin: 0.5rem 0.5rem;
   padding: 10px 20px;
-  border: 2px solid;}
+  border: 2px solid;
+}
 
 .midle {
   margin-top: 10rem;
@@ -76,19 +74,18 @@ input[type="text"]
 }
 .textbox1 {
   display: inline-block;
-  float: left;    
-  width: 500px;    
+  float: left;
+  width: 500px;
   height: 100px;
   text-align: justify;
-      
 }
 
-.textbox2{
+.textbox2 {
   display: block;
-  float: left;    
-  width: 200px;    
-  height: 100px;    
+  float: left;
+  width: 200px;
+  height: 100px;
 }
-.forms{
+.forms {
   margin-bottom: 30px;
 }

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, storage } from "../init/firebaseinit";
-
+import firebase from "firebase/app";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,6 +8,7 @@ import {
   onAuthStateChanged,
   signOut,
   confirmPasswordReset,
+  reauthenticateWithCredential,
 } from "firebase/auth";
 
 const AuthContext = createContext({
@@ -16,6 +17,7 @@ const AuthContext = createContext({
   login: () => Promise,
   logout: () => Promise,
   ForgotPassword: () => Promise,
+  reauthenticat: () => Promise,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -45,6 +47,15 @@ export default function AuthContextProvider({ children }) {
     return signOut(auth);
   }
 
+  const reauthenticat = (CurruntPassword) => {
+    var cred = signInWithEmailAndPassword(
+      auth,
+      currentUser.email,
+      CurruntPassword
+    );
+    return reauthenticateWithCredential(currentUser, cred);
+  };
+
   function ForgotPassword(email) {
     return sendPasswordResetEmail(auth, email, {
       url: "http://localhost:3000/login",
@@ -57,6 +68,7 @@ export default function AuthContextProvider({ children }) {
     login,
     logout,
     ForgotPassword,
+    reauthenticat,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
