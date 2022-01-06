@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 
 export const useStyles = makeStyles((theme) => ({
-  root: {
+  rootse: {
     display: "flex",
   },
   page: {
@@ -62,6 +62,14 @@ export const useStyles = makeStyles((theme) => ({
   toolbar: {
     [theme.breakpoints.down("sm")]: {
       ...theme.mixins.toolbar,
+    },
+  },
+  shiftTextLeft: {
+    marginLeft: "0px",
+  },
+  shiftTextRight: {
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: "240px",
     },
   },
 }));

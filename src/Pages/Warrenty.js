@@ -333,6 +333,7 @@ const Warrenty = () => {
       setImages((prevState) => [...prevState, e.target.files[i]]);
     }
   };
+
   useEffect(() => {
     getEngineBrand();
     getCustomerData();

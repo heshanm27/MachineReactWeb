@@ -33,7 +33,7 @@ function DashBordDarwer({ darkmode, setDarkMode }) {
   const theme = useTheme();
   const reslution = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const navigate = useNavigate();
   const toggelNavigation = () => {
@@ -41,10 +41,13 @@ function DashBordDarwer({ darkmode, setDarkMode }) {
   };
 
   const closeNavigation = () => {
-    setOpen(false);
+    //if resultion match only drawer auto lose when clik button
+    if (reslution) {
+      setOpen(false);
+    }
   };
   return (
-    <div className={classes.root}>
+    <div className={classes.rootse}>
       {reslution && (
         <AppBar>
           <Toolbar>
@@ -127,8 +130,10 @@ function DashBordDarwer({ darkmode, setDarkMode }) {
         </List>
       </Drawer>
       <div className={classes.page}>
-        <div className={classes.toolbar}></div>
-        <Outlet />
+        <div className={open ? classes.shiftTextRight : classes.shiftTextLeft}>
+          <div className={classes.toolbar}></div>
+          <Outlet />
+        </div>
       </div>
     </div>
   );
